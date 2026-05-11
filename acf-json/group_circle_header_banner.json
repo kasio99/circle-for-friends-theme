@@ -1,0 +1,129 @@
+{
+    "key": "group_circle_header_banner",
+    "title": "Block: Header Banner",
+    "fields": [
+        {
+            "key": "field_circle_header_banner_eyebrow",
+            "label": "Eyebrow Text",
+            "name": "eyebrow_text",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Small line of text above the heading, e.g. 'Welcome to Circle for Friends'.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "Welcome to Circle for Friends",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_circle_header_banner_heading",
+            "label": "Heading",
+            "name": "heading",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Main banner heading. You can include basic inline HTML such as <em>trusted business &amp; community network.<\/em> if desired.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "100",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_circle_header_banner_intro",
+            "label": "Sub heading",
+            "name": "sub_heading",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "Supporting paragraph below the heading.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "100",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 1,
+            "rows": 3,
+            "placeholder": "Connect with trusted professionals, attend curated events, and give back to the community through your membership.",
+            "new_lines": "br"
+        },
+        {
+            "key": "field_circle_header_banner_button",
+            "label": "Button",
+            "name": "button",
+            "aria-label": "",
+            "type": "link",
+            "instructions": "Primary call-to-action button.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "array"
+        },
+        {
+            "key": "field_circle_header_banner_image",
+            "label": "Banner Image",
+            "name": "banner_image",
+            "aria-label": "",
+            "type": "image",
+            "instructions": "Main image shown on the right-hand side of the banner.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "array",
+            "preview_size": "medium",
+            "library": "all",
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": "jpg,jpeg,png,webp"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "acf\/header-banner"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Fields for the custom Header Banner ACF block.",
+    "show_in_rest": 0,
+    "display_title": "",
+    "modified": 1774313786
+}

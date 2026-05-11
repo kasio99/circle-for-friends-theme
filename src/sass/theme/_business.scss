@@ -1,0 +1,693 @@
+.business-directory-promo {
+  padding: 3rem 0;
+  background-color: $light-grey;
+  border-top: 3px solid $border-grey;
+  border-bottom: 3px solid $border-grey ;
+
+  &__inner {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.85fr) 1.25fr;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  &__heading {
+    margin-bottom: 0.35rem;
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    line-height: 1.1;
+    font-style: italic;
+    font-weight: 700;
+    color: $blue;
+  }
+
+  &__text {
+    margin-bottom: 1.75rem;
+    font-size: 1.1rem;
+    color: #333;
+  }
+
+  &__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.35rem;
+    border-radius: 0.45rem;
+    background-color: $blue;
+    color: $white;
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible,
+    &:active {
+      background-color: $blue;
+      color: $white;
+      text-decoration: none;
+    }
+  }
+
+  &__categories {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(150px, 1fr));
+    gap: 1.25rem;
+  }
+
+  &__category-tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.85rem;
+    min-height: 92px;
+    padding: 1rem;
+    border: 1px solid rgba($blue, 0.12);
+    border-radius: 0.45rem;
+    background-color: $white;
+    color: $blue;
+    font-size: 1.4rem;
+    font-weight: 500;
+    text-decoration: none;
+    box-shadow: 0 0.25rem 0.85rem rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+
+    i {
+      font-size: 1.45rem;
+    }
+
+    &:hover,
+    &:focus-visible {
+      color: $blue;
+      border-color: rgba($blue, 0.35);
+      box-shadow: 0 0.55rem 1.25rem rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
+    }
+  }
+
+  @include media-breakpoint-down(lg) {
+    &__inner {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    &__categories {
+      grid-template-columns: repeat(2, minmax(150px, 1fr));
+    }
+  }
+
+  @include media-breakpoint-down(sm) {
+    &__categories {
+      grid-template-columns: 1fr;
+    }
+
+    &__category-tile {
+      justify-content: space-between;
+    }
+  }
+}
+
+.business-card {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  background-color: $white;
+  border: 1px solid rgba($blue, 0.08);
+  border-radius: 0.85rem;
+  box-shadow: 0 0.35rem 1.25rem rgba(0, 0, 0, 0.04);
+
+  &__accent {
+    width: 0.35rem;
+    flex: 0 0 0.35rem;
+    background-color: $blue;
+  }
+
+  &__inner {
+    display: grid;
+    grid-template-columns: 96px 1fr auto;
+    gap: 1.5rem;
+    align-items: center;
+    width: 100%;
+    padding: 1.5rem;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 96px;
+    height: 96px;
+    background-color: $light-grey;
+    border-radius: 0.75rem;
+    color: $blue;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  &__logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 0.75rem;
+  }
+
+  &__title {
+    margin: 0 0 0.35rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $blue;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+
+      &:hover,
+      &:focus {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &__category {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.7rem;
+    border: 1px solid rgba($blue, 0.12);
+    border-radius: 999px;
+    background-color: rgba($blue, 0.04);
+    color: $blue;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  &__description {
+    margin: 0.65rem 0 0.35rem;
+    color: #333;
+    line-height: 1.45;
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.6rem;
+    color: $dark-grey;
+    font-size: 0.9rem;
+
+    span:not(:last-child)::after {
+      content: "·";
+      margin-left: 0.6rem;
+      color: rgba($dark-grey, 0.55);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+
+      &:hover,
+      &:focus {
+        color: $blue;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &__action {
+    min-width: 170px;
+    text-align: right;
+  }
+
+  &__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 160px;
+    padding: 0.7rem 1.25rem;
+    border-radius: 0.45rem;
+    background-color: $blue;
+    color: $white;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible,
+    &:active {
+      background-color: $blue;
+      color: $white;
+      text-decoration: none;
+    }
+  }
+
+.business-directory-results__list {
+
+  .business-card:nth-child(4n + 1) .business-card__accent {
+    background-color: $green;
+  }
+
+  .business-card:nth-child(4n + 2) .business-card__accent {
+    background-color: $white;
+    border-left: 1px solid rgba($blue, 0.15); // keeps visible on white
+  }
+
+  .business-card:nth-child(4n + 3) .business-card__accent {
+    background-color: $red;
+  }
+
+  .business-card:nth-child(4n + 4) .business-card__accent {
+    background-color: $blue;
+  }
+
+}
+
+  @include media-breakpoint-down(md) {
+    &__inner {
+      grid-template-columns: 72px 1fr;
+      gap: 1rem;
+      padding: 1.25rem;
+    }
+
+    &__logo {
+      width: 72px;
+      height: 72px;
+    }
+
+    &__action {
+      grid-column: 1 / -1;
+      min-width: 0;
+      text-align: left;
+    }
+
+    &__button {
+      width: 100%;
+    }
+  }
+}
+
+.business-directory {
+  background-color: $light-grey;
+
+  &__hero {
+    padding: 4rem 0 2.5rem;
+    background-color: $white;
+    border-bottom: 1px solid rgba($blue, 0.08);
+  }
+
+  &__title {
+    margin-bottom: 0.75rem;
+    color: $blue;
+    font-size: clamp(2.25rem, 4vw, 4rem);
+    font-weight: 700;
+    line-height: 1.05;
+  }
+
+  &__intro {
+    max-width: 46rem;
+    margin-bottom: 0;
+    color: #444;
+    font-size: 1.15rem;
+  }
+
+  &__content {
+    padding: 2.5rem 0 4rem;
+  }
+}
+
+.business-directory-filters {
+  .row {
+    align-items: end;
+  }
+
+  &__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 42px;
+    padding: 0.65rem 1rem;
+    border: 1px solid darken($blue, 8%);
+    border-radius: 0.45rem;
+    background-color: $blue;
+    color: $white;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible,
+    &:active {
+      background-color: $blue;
+      color: $white;
+      text-decoration: none;
+    }
+  }
+
+  &__reset {
+    margin-top: 0.75rem;
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.4rem 0.85rem;
+      border-radius: 0.35rem;
+      border: 1px solid rgba($blue, 0.25);
+      background-color: $white;
+      color: $blue;
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s ease;
+
+      &:hover,
+      &:focus {
+        background-color: rgba($blue, 0.08);
+        border-color: $blue;
+        color: $blue;
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+.business-directory-results {
+  &__count {
+    margin-bottom: 1rem;
+    color: $dark-grey;
+    font-weight: 600;
+  }
+
+  &__list {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  &__empty {
+    padding: 2rem;
+    background-color: $white;
+    border-radius: 0.85rem;
+    border: 1px solid rgba($blue, 0.08);
+
+    h2 {
+      color: $blue;
+    }
+  }
+}
+
+.business-directory-pagination {
+  margin-top: 2rem;
+
+  .pagination {
+    justify-content: center;
+    gap: 0.35rem;
+  }
+
+  .page-link {
+    border-radius: 0.35rem;
+    color: $blue;
+  }
+
+  .current {
+    background-color: $blue;
+    border-color: $blue;
+    color: $white;
+  }
+}
+
+.single-business {
+  background-color: $light-grey;
+
+  &__hero {
+    padding: 3rem 0 2rem;
+    background-color: $white;
+  }
+
+  &__breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+    color: $dark-grey;
+    font-size: 0.9rem;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+
+      &:hover {
+        color: $blue;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &__verified {
+    display: inline-flex;
+    margin-bottom: 0.75rem;
+    padding: 0.3rem 1.4rem;
+    border-radius: 999px;
+    background-color: $green;
+    color: $white;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  &__title {
+    margin-bottom: 0.5rem;
+    color: $blue;
+    font-size: clamp(2.2rem, 4vw, 3.75rem);
+    line-height: 1.05;
+    font-weight: 700;
+  }
+
+  &__category {
+    display: inline-flex;
+    margin-bottom: 0.75rem;
+    padding: 0.2rem 1rem;
+    border: 1px solid rgba($blue, 0.16);
+    border-radius: 999px;
+    background-color: rgba($blue, 0.04);
+    color: $blue;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  &__summary {
+    max-width: 58rem;
+    margin-bottom: 1.5rem;
+    color: #222;
+    font-size: 1.05rem;
+  }
+
+  &__logo-row {
+    margin-top: 1.5rem;
+  }
+
+  &__logo {
+    width: 140px;
+    height: 105px;
+    border-radius: 0.8rem;
+    background-color: #e9edf5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $blue;
+    font-weight: 600;
+  }
+
+  &__logo {
+    width: 140px;
+    height: 105px;
+    border-radius: 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  &__logo-img {
+    width: 100%;
+    height: 100%;
+    padding: 0.75rem;
+    object-fit: contain;
+  }
+
+  &__photo-placeholder {
+    min-height: 125px;
+    border-radius: 1rem;
+  }
+
+  &__body {
+    padding: 3rem 0 4rem;
+  }
+
+  &__service-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.85rem;
+    margin-bottom: 2rem;
+
+    span {
+      display: inline-flex;
+      justify-content: center;
+      padding: 0.45rem 1rem;
+      border: 1px solid rgba($blue, 0.12);
+      border-radius: 999px;
+      background-color: rgba($blue, 0.04);
+      color: $blue;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+  }
+
+  &__gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+
+    div {
+      min-height: 105px;
+      border-radius: 0.8rem;
+      background-color: #e9edf5;
+    }
+  }
+
+  &__contact-item {
+    margin-bottom: 1.2rem;
+
+    span {
+      display: block;
+      margin-bottom: 0.25rem;
+      color: $dark-grey;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    a,
+    p {
+      margin: 0;
+      color: #222;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: $blue;
+      text-decoration: underline;
+    }
+  }
+
+  &__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid darken($blue, 8%);
+    border-radius: 0.45rem;
+    background-color: $blue;
+    color: $white;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible,
+    &:active {
+      background-color: $blue;
+      color: $white;
+      text-decoration: none;
+    }
+
+    &--outline {
+      background-color: $white;
+      color: $blue;
+
+      &:hover,
+      &:focus-visible,
+      &:active {
+        background-color: rgba($blue, 0.06);
+        color: $blue;
+      }
+    }
+  }
+
+  &__muted {
+    margin-top: 1.5rem;
+    color: $dark-grey;
+    font-size: 0.95rem;
+  }
+
+  &__enquiry-form {
+    label {
+      display: block;
+      margin-bottom: 0.85rem;
+      color: $dark-grey;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    input,
+    textarea {
+      display: block;
+      width: 100%;
+      margin-top: 0.25rem;
+      padding: 0.65rem;
+      border: 1px solid rgba($blue, 0.16);
+      border-radius: 0.35rem;
+      background-color: $white;
+    }
+  }
+
+  @include media-breakpoint-down(md) {
+    &__media-row {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    &__logo {
+      width: 120px;
+    }
+
+    &__service-list,
+    &__gallery {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+.single-business-card {
+  position: relative;
+  margin-bottom: 1.5rem;
+  padding: 2rem;
+  overflow: hidden;
+  background-color: $white;
+  border: 1px solid rgba($blue, 0.08);
+  border-radius: 0.85rem;
+  box-shadow: 0 0.35rem 1.25rem rgba(0, 0, 0, 0.035);
+
+  h2 {
+    margin-bottom: 1.5rem;
+    color: $blue;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  h3 {
+    margin: 1.75rem 0 1rem;
+    color: $blue;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  &--large {
+    min-height: 430px;
+  }
+
+  &--accent-green,
+  &--accent-red {
+    border-left-width: 0.35rem;
+  }
+
+  &--accent-green {
+    border-left-color: $green;
+  }
+
+  &--accent-red {
+    border-left-color: $red;
+  }
+}

@@ -9,6 +9,8 @@
 
 // Any additional imported files //
 @import "theme/child_theme";                             // <------- Add your styles into this file
+@import "theme/header_banner";                             // <------- Add your styles into this file
+@import "theme/business"; 
 @import "assets/understrap/theme/colors";           // <-------- This creates the necessary bootstrap color classes.
 @import "assets/understrap/theme/blocks";           // <-------- This adds Bootstrap styles to blocks.
 @import "assets/understrap/theme/contact-form7";    // <-------- Contact Form 7 - Bootstrap 4 support

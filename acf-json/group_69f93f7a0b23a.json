@@ -1,0 +1,47 @@
+{
+    "key": "group_69f93f7a0b23a",
+    "title": "Business Category Options",
+    "fields": [
+        {
+            "key": "field_69f93f7a59b60",
+            "label": "Icon Name",
+            "name": "icon_name",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Icon name from font awesome",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "taxonomy",
+                "operator": "==",
+                "value": "business_category"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "display_title": "",
+    "modified": 1777942513
+}

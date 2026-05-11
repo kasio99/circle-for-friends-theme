@@ -1,0 +1,109 @@
+.acf-header-banner {
+  padding: 4rem 0;
+  /* background-color: $light-grey; */
+
+  &__inner {
+    row-gap: 2rem;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  &__eyebrow {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-style: italic;
+    color: $dark-grey;
+  }
+
+  &__heading {
+    margin-bottom: 1.5rem;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    line-height: 1.1;
+    font-weight: 700;
+    color: $blue;
+  }
+
+  &__sub-heading {
+    margin-bottom: 2rem;
+    font-size: 1.25rem;
+    line-height: 1.4;
+    color: #444;
+    max-width: 42rem;
+  }
+
+  &__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85rem 1.5rem;
+    font-size: 1.1rem;
+    border-radius: 0.5rem;
+    background-color: $blue;
+    color: $white;
+    border: 1px solid darken($blue, 8%);
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -75%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(
+        110deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.12) 45%,
+        rgba(255, 255, 255, 0.22) 50%,
+        rgba(255, 255, 255, 0.12) 55%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      transform: skewX(-20deg);
+      pointer-events: none;
+    }
+
+    &:hover,
+    &:focus-visible,
+    &:active {
+      background-color: $blue;
+      color: $white;
+      text-decoration: none;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    &:hover::after,
+    &:focus-visible::after,
+    &:active::after {
+      animation: button-shimmer 0.9s ease;
+    }
+  }
+
+  &__image-wrap {
+    height: 100%;
+  }
+
+  &__image {
+    display: block;
+    width: 100%;
+    border-radius: 1.25rem;
+    object-fit: cover;
+  }
+}
+
+@keyframes button-shimmer {
+  0% {
+    left: -75%;
+  }
+  100% {
+    left: 125%;
+  }
+}

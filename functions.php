@@ -46,6 +46,26 @@ function theme_enqueue_styles() {
 }
 add_action( 'wp_enqueue_scripts', 'theme_enqueue_styles' );
 
+function cff_enqueue_fontawesome_kit() {
+	wp_enqueue_script(
+		'fontawesome-kit',
+		'https://kit.fontawesome.com/782da41165.js',
+		array(),
+		null,
+		false
+	);
+}
+add_action( 'wp_enqueue_scripts', 'cff_enqueue_fontawesome_kit' );
+
+function cff_fontawesome_script_attributes( $tag, $handle, $src ) {
+	if ( 'fontawesome-kit' === $handle ) {
+		return '<script src="' . esc_url( $src ) . '" crossorigin="anonymous"></script>' . "\n";
+	}
+
+	return $tag;
+}
+add_filter( 'script_loader_tag', 'cff_fontawesome_script_attributes', 10, 3 );
+
 
 
 /**
@@ -86,3 +106,93 @@ function understrap_child_customize_controls_js() {
 	);
 }
 add_action( 'customize_controls_enqueue_scripts', 'understrap_child_customize_controls_js' );
+
+// Save ACF field groups to theme.
+add_filter('acf/settings/save_json', function ($path) {
+	return get_stylesheet_directory() . '/acf-json';
+});
+
+// Load ACF field groups from theme.
+add_filter('acf/settings/load_json', function ($paths) {
+	unset($paths[0]); // remove default path
+	$paths[] = get_stylesheet_directory() . '/acf-json';
+	return $paths;
+});
+
+add_action('acf/init', function () {
+	if (! function_exists('acf_register_block_type')) {
+		return;
+	}
+
+	acf_register_block_type(array(
+		'name'            => 'header-banner',
+		'title'           => __('Header Banner', 'understrap'),
+		'description'     => __('A custom header banner block.', 'understrap'),
+		'render_template' => get_stylesheet_directory() . '/acf-blocks/header-banner.php',
+		'category'        => 'formatting',
+		'icon'            => 'cover-image',
+		'keywords'        => array('banner', 'header', 'hero'),
+		'mode'            => 'edit',
+		'supports'        => array(
+			'align' => true,
+			'jsx'   => true,
+		),
+	));
+});
+
+//post type setup found here
+require_once get_stylesheet_directory() . '/inc/post-types-taxonomies.php';
+//shortcodes found here
+require_once get_stylesheet_directory() . '/inc/shortcodes.php';
+
+//block editor support for products
+function cff_enable_block_editor_for_products( $can_edit, $post_type ) {
+	if ( 'product' === $post_type ) {
+		return true;
+	}
+
+	return $can_edit;
+}
+add_filter( 'use_block_editor_for_post_type', 'cff_enable_block_editor_for_products', 10, 2 );
+
+// Replace WooCommerce add to cart button with custom CTA.
+add_action( 'wp', function () {
+
+	// Remove default Woo button.
+	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
+
+	// Add custom button.
+	add_action( 'woocommerce_single_product_summary', 'cff_custom_add_to_cart_button', 30 );
+});
+
+function cff_custom_add_to_cart_button() {
+	global $product;
+
+	if ( ! $product || ! $product->is_purchasable() ) {
+		return;
+	}
+
+	$product_id  = $product->get_id();
+	$checkout_url = wc_get_checkout_url();
+	?>
+
+	<form class="cart" action="<?php echo esc_url( $checkout_url ); ?>" method="post">
+		<input type="hidden" name="add-to-cart" value="<?php echo esc_attr( $product_id ); ?>" />
+
+		<button
+			type="submit"
+			class="single_add_to_cart_button btn btn-primary nav-cta btn-shimmer"
+		>
+			Join Circle For Friends Now
+		</button>
+	</form>
+
+	<?php
+}
+
+// Ensure only 1 membership can be purchased.
+add_filter( 'woocommerce_is_sold_individually', '__return_true' );
+
+add_filter( 'woocommerce_add_to_cart_redirect', function () {
+	return wc_get_checkout_url();
+} );
