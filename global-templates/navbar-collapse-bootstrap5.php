@@ -54,7 +54,7 @@ $container = get_theme_mod( 'understrap_container_type' );
 
 		<ul class="navbar-nav utilities-nav d-none d-md-flex align-items-center">
 			<li class="nav-item">
-				<a class="btn btn-primary nav-cta btn-shimmer" href="<?php echo get_permalink( get_page_by_path( 'become-a-member' ) ); ?>">
+				<a class="btn btn-primary nav-cta btn-shimmer" href="<?php echo get_permalink( get_page_by_path( '/memberships/#memberships' ) ); ?>">
 					Become a member
 				</a>
 			</li>
