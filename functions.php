@@ -196,3 +196,120 @@ add_filter( 'woocommerce_is_sold_individually', '__return_true' );
 add_filter( 'woocommerce_add_to_cart_redirect', function () {
 	return wc_get_checkout_url();
 } );
+
+//force australia region for all purchases
+
+/**
+ * Force WooCommerce default country to Australia.
+ */
+add_filter( 'woocommerce_get_country_locale_default', function( $locale ) {
+	return 'AU';
+} );
+
+/**
+ * Force checkout billing/shipping country to Australia.
+ */
+add_filter( 'default_checkout_billing_country', function() {
+	return 'AU';
+} );
+
+add_filter( 'default_checkout_shipping_country', function() {
+	return 'AU';
+} );
+
+/**
+ * Only allow Australia.
+ */
+add_filter( 'woocommerce_countries_allowed_countries', function() {
+	return array(
+		'AU' => 'Australia',
+	);
+} );
+
+add_filter( 'woocommerce_countries_shipping_countries', function() {
+	return array(
+		'AU' => 'Australia',
+	);
+} );
+
+//additional membership product checkout fields
+/**
+ * Add membership fields to WooCommerce Blocks checkout.
+ */
+add_action( 'woocommerce_init', function() {
+
+	if ( ! function_exists( 'woocommerce_register_additional_checkout_field' ) ) {
+		return;
+	}
+
+	woocommerce_register_additional_checkout_field(
+	array(
+		'id'       => 'cff/member-title',
+		'label'    => __( 'Title', 'understrap-child' ),
+		'location' => 'address',
+		'type'     => 'select',
+		'required' => true,
+		'index'    => 1,
+		'options'  => array(
+			array(
+				'value' => 'Mr',
+				'label' => __( 'Mr', 'understrap-child' ),
+			),
+			array(
+				'value' => 'Mrs',
+				'label' => __( 'Mrs', 'understrap-child' ),
+			),
+			array(
+				'value' => 'Miss',
+				'label' => __( 'Miss', 'understrap-child' ),
+			),
+			array(
+				'value' => 'Ms',
+				'label' => __( 'Ms', 'understrap-child' ),
+			),
+		),
+	)
+);
+
+	woocommerce_register_additional_checkout_field(
+		array(
+			'id'       => 'cff/occupation',
+			'label'    => __( 'Occupation', 'understrap-child' ),
+			'location' => 'order',
+			'type'     => 'text',
+			'required' => true,
+		)
+	);
+
+	woocommerce_register_additional_checkout_field(
+		array(
+			'id'       => 'cff/place-of-birth',
+			'label'    => __( 'Place of birth/Region', 'understrap-child' ),
+			'location' => 'order',
+			'type'     => 'text',
+			'required' => true,
+		)
+	);
+
+	woocommerce_register_additional_checkout_field (
+		array(
+			'id'       => 'cff/date-of-birth',
+			'label'    => __( 'Date of birth (dd/mm/yyyy)', 'understrap-child' ),
+			'location' => 'order',
+			'type'     => 'text',
+			'required' => true,
+			'attributes' => array(
+				'placeholder' => 'dd/mm/yyyy',
+				'pattern'     => '(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/([0-9]{4})',
+				'maxlength'   => '10',
+				'inputmode'   => 'numeric',
+			),
+		)
+	);
+
+});
+
+
+add_filter( 'woocommerce_get_privacy_policy_url', function( $url ) {
+	return 'https://circleforfriends.com.au/wp-content/uploads/2026/05/privacy-policy.pdf';
+});

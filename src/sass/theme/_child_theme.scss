@@ -1,3 +1,8 @@
+:root {
+  --bs-link-color: #{$blue};
+  --bs-link-hover-color: #{darken($blue, 8%)};
+}
+
 .wrapper {
     padding: 0;
 }
@@ -245,11 +250,11 @@
 
   form.cart {
     margin-top: 2rem;
-    padding: 1.5rem;
+    /* padding: 1.5rem; */
     max-width: 440px;
-    border-radius: 0.85rem;
-    background-color: rgba($blue, 0.05);
-    border: 1px solid rgba($blue, 0.1);
+    /* border-radius: 0.85rem; */
+    /* background-color: rgba($blue, 0.05);
+    border: 1px solid rgba($blue, 0.1); */
   }
 
   .single_add_to_cart_button {
@@ -1132,6 +1137,20 @@
   &:active::after {
     animation: shimmerSwipe 0.9s ease;
   }
+}
+
+// Hide country field in WooCommerce Blocks checkout
+.wc-block-components-country-input,
+.wc-block-components-address-form__country {
+  display: none !important;
+}
+
+.woocommerce-order,
+.wc-block-order-confirmation,
+.wp-block-woocommerce-checkout-order-confirmation-block {
+  max-width: 1200px;
+  margin: 4rem auto;
+  padding: 0 1rem;
 }
 
 // touch devices

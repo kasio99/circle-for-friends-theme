@@ -52,7 +52,7 @@ $container = get_theme_mod( 'understrap_container_type' );
 		);
 		?>
 
-		<ul class="navbar-nav utilities-nav d-none d-md-flex align-items-center">
+		<ul class="navbar-nav utilities-nav d-none d-md-flex align-items-center me-3">
 			<li class="nav-item">
 				<a class="btn btn-primary nav-cta btn-shimmer" href="<?php echo get_permalink( get_page_by_path( '/memberships/#memberships' ) ); ?>">
 					Become a member
