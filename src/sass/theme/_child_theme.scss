@@ -1153,6 +1153,31 @@
   padding: 0 1rem;
 }
 
+.wc-block-checkout__main {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #contact-fields {
+    order: 10;
+  }
+
+  #billing-fields {
+    order: 20;
+  }
+
+  #order-fields {
+    order: 30;
+  }
+
+  #payment-method {
+    order: 40;
+  }
+
+  .wp-block-woocommerce-checkout-actions-block {
+    order: 50;
+  }
+
 // touch devices
 @media (hover: none) {
   .wc-block-components-button:active::after,
@@ -1181,30 +1206,7 @@
     height: auto;
   }
 
-  .wc-block-checkout__main {
-    display: flex;
-    flex-direction: column;
-  }
-
-  #contact-fields {
-    order: 10;
-  }
-
-  #billing-fields {
-    order: 20;
-  }
-
-  #order-fields {
-    order: 30;
-  }
-
-  #payment-method {
-    order: 40;
-  }
-
-  .wp-block-woocommerce-checkout-actions-block {
-    order: 50;
-  }
+  
 
 }
 
