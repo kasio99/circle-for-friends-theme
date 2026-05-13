@@ -15947,6 +15947,18 @@ figure.woocommerce-product-gallery__wrapper {
     max-width: 100px;
     height: auto;
   }
+  .wc-block-checkout {
+    display: flex;
+    flex-direction: column;
+  }
+  .wc-block-checkout__add-note,
+  .wc-block-components-checkout-step--additional-fields {
+    order: 20;
+  }
+  .wc-block-checkout__payment-method,
+  .wc-block-components-checkout-step--payment {
+    order: 30;
+  }
 }
 @media (max-width: 991.98px) {
   #navbarNavDropdown {

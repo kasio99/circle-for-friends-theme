@@ -1181,6 +1181,23 @@
     height: auto;
   }
 
+    .wc-block-checkout {
+    display: flex;
+    flex-direction: column;
+  }
+
+  // Additional order information
+  .wc-block-checkout__add-note,
+  .wc-block-components-checkout-step--additional-fields {
+    order: 20;
+  }
+
+  // Payment section
+  .wc-block-checkout__payment-method,
+  .wc-block-components-checkout-step--payment {
+    order: 30;
+  }
+
 }
 
 @include media-breakpoint-down(lg) {
