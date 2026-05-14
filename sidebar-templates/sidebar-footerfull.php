@@ -37,11 +37,11 @@ $container = 'container';
 							Contact us
 						</a>
 					</li>
-					<li>
-						<a href="<?php echo esc_url( home_url( '/business-directory/' ) ); ?>">
+					<!-- <li>
+						<a href="<?php //echo esc_url( home_url( '/business-directory/' ) ); ?>">
 							Business directory
 						</a>
-					</li>
+					</li> -->
 				</ul>
 			</div>
 

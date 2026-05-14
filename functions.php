@@ -313,3 +313,37 @@ add_action( 'woocommerce_init', function() {
 add_filter( 'woocommerce_get_privacy_policy_url', function( $url ) {
 	return 'https://circleforfriends.com.au/wp-content/uploads/2026/05/privacy-policy.pdf';
 });
+
+
+//google tags
+
+function kasio_is_production_site() {
+    return $_SERVER['HTTP_HOST'] === 'www.circleforfriends.com.au' || $_SERVER['HTTP_HOST'] === 'circleforfriends.com.au';
+}
+
+add_action('wp_head', function () {
+    if (!kasio_is_production_site()) {
+        return;
+    }
+    ?>
+    <!-- Google Tag Manager -->
+		<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+		new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+		j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+		'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+		})(window,document,'script','dataLayer','GTM-WDVVKBK2');</script>
+	<!-- End Google Tag Manager -->
+    <?php
+}, 1);
+
+add_action('wp_body_open', function () {
+    if (!kasio_is_production_site()) {
+        return;
+    }
+    ?>
+    <!-- Google Tag Manager (noscript) -->
+		<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WDVVKBK2"
+		height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+	<!-- End Google Tag Manager (noscript) -->
+    <?php
+}, 1);
