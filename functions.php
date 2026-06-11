@@ -172,8 +172,16 @@ function cff_custom_add_to_cart_button() {
 		return;
 	}
 
-	$product_id  = $product->get_id();
+	$product_id   = $product->get_id();
 	$checkout_url = wc_get_checkout_url();
+
+	$button_text = __( 'Add to Cart', 'understrap-child' );
+
+	if ( has_term( 'membership', 'product_cat', $product_id ) ) {
+		$button_text = __( 'Join Circle for Friends Now', 'understrap-child' );
+	} elseif ( has_term( 'event', 'product_cat', $product_id ) ) {
+		$button_text = __( 'Reserve Your Seat', 'understrap-child' );
+	}
 	?>
 
 	<form class="cart" action="<?php echo esc_url( $checkout_url ); ?>" method="post">
@@ -183,7 +191,7 @@ function cff_custom_add_to_cart_button() {
 			type="submit"
 			class="single_add_to_cart_button btn btn-primary nav-cta btn-shimmer"
 		>
-			Join Circle For Friends Now
+			<?php echo esc_html( $button_text ); ?>
 		</button>
 	</form>
 
