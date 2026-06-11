@@ -175,17 +175,41 @@ function cff_custom_add_to_cart_button() {
 	$product_id   = $product->get_id();
 	$checkout_url = wc_get_checkout_url();
 
+	$is_membership = has_term( 'membership', 'product_cat', $product_id );
+	$is_event      = has_term( 'event', 'product_cat', $product_id );
+
 	$button_text = __( 'Add to Cart', 'understrap-child' );
 
-	if ( has_term( 'membership', 'product_cat', $product_id ) ) {
+	if ( $is_membership ) {
 		$button_text = __( 'Join Circle for Friends Now', 'understrap-child' );
-	} elseif ( has_term( 'event', 'product_cat', $product_id ) ) {
+	} elseif ( $is_event ) {
 		$button_text = __( 'Reserve Your Seat', 'understrap-child' );
 	}
 	?>
 
 	<form class="cart" action="<?php echo esc_url( $checkout_url ); ?>" method="post">
+
 		<input type="hidden" name="add-to-cart" value="<?php echo esc_attr( $product_id ); ?>" />
+
+		<?php if ( $is_event ) : ?>
+
+			<div class="cff-event-quantity">
+				<label for="quantity">
+					<?php esc_html_e( 'Number of tickets', 'understrap-child' ); ?>
+				</label>
+
+				<?php
+				woocommerce_quantity_input(
+					array(
+						'min_value' => 1,
+						'max_value' => 20,
+						'input_value' => 1,
+					)
+				);
+				?>
+			</div>
+
+		<?php endif; ?>
 
 		<button
 			type="submit"
@@ -193,13 +217,26 @@ function cff_custom_add_to_cart_button() {
 		>
 			<?php echo esc_html( $button_text ); ?>
 		</button>
+
 	</form>
 
 	<?php
 }
 
 // Ensure only 1 membership can be purchased.
-add_filter( 'woocommerce_is_sold_individually', '__return_true' );
+add_filter(
+	'woocommerce_is_sold_individually',
+	function( $sold_individually, $product ) {
+
+		if ( has_term( 'membership', 'product_cat', $product->get_id() ) ) {
+			return true;
+		}
+
+		return false;
+	},
+	10,
+	2
+);
 
 add_filter( 'woocommerce_add_to_cart_redirect', function () {
 	return wc_get_checkout_url();
@@ -239,6 +276,7 @@ add_filter( 'woocommerce_countries_shipping_countries', function() {
 		'AU' => 'Australia',
 	);
 } );
+
 
 //additional membership product checkout fields
 /**
