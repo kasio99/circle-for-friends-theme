@@ -195,7 +195,7 @@ function cff_custom_add_to_cart_button() {
 
 			<div class="cff-event-quantity">
 				<label for="quantity">
-					<?php esc_html_e( 'Number of tickets', 'understrap-child' ); ?>
+					<?php esc_html_e( 'Select Number of Tickets', 'understrap-child' ); ?>
 				</label>
 
 				<?php
@@ -223,6 +223,7 @@ function cff_custom_add_to_cart_button() {
 	<?php
 }
 
+
 // Ensure only 1 membership can be purchased.
 add_filter(
 	'woocommerce_is_sold_individually',
@@ -242,119 +243,165 @@ add_filter( 'woocommerce_add_to_cart_redirect', function () {
 	return wc_get_checkout_url();
 } );
 
-//force australia region for all purchases
+// Additional membership product checkout fields.
 
 /**
- * Force WooCommerce default country to Australia.
+ * Check if the cart contains a membership product.
  */
-add_filter( 'woocommerce_get_country_locale_default', function( $locale ) {
-	return 'AU';
-} );
+function cff_cart_contains_membership_product() {
+	if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+		return false;
+	}
+
+	foreach ( WC()->cart->get_cart() as $cart_item ) {
+		$product_id = isset( $cart_item['product_id'] ) ? (int) $cart_item['product_id'] : 0;
+
+		if ( $product_id && has_term( 'membership', 'product_cat', $product_id ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
 
 /**
- * Force checkout billing/shipping country to Australia.
+ * Add checkout body class so we can hide membership-only fields for events.
  */
-add_filter( 'default_checkout_billing_country', function() {
-	return 'AU';
-} );
+add_filter(
+	'body_class',
+	function( $classes ) {
+		if ( function_exists( 'is_checkout' ) && is_checkout() && ! is_order_received_page() ) {
+			$classes[] = cff_cart_contains_membership_product()
+				? 'cff-cart-has-membership'
+				: 'cff-cart-has-no-membership';
+		}
 
-add_filter( 'default_checkout_shipping_country', function() {
-	return 'AU';
-} );
+		return $classes;
+	}
+);
 
-/**
- * Only allow Australia.
- */
-add_filter( 'woocommerce_countries_allowed_countries', function() {
-	return array(
-		'AU' => 'Australia',
-	);
-} );
-
-add_filter( 'woocommerce_countries_shipping_countries', function() {
-	return array(
-		'AU' => 'Australia',
-	);
-} );
-
-
-//additional membership product checkout fields
 /**
  * Add membership fields to WooCommerce Blocks checkout.
  */
-add_action( 'woocommerce_init', function() {
+add_action(
+	'woocommerce_init',
+	function() {
+		if ( ! function_exists( 'woocommerce_register_additional_checkout_field' ) ) {
+			return;
+		}
 
-	if ( ! function_exists( 'woocommerce_register_additional_checkout_field' ) ) {
-		return;
+		woocommerce_register_additional_checkout_field(
+			array(
+				'id'       => 'cff/member-title',
+				'label'    => __( 'Title', 'understrap-child' ),
+				'location' => 'address',
+				'type'     => 'select',
+				'required' => false,
+				'index'    => 1,
+				'options'  => array(
+					array(
+						'value' => '',
+						'label' => __( 'Select a title', 'understrap-child' ),
+					),
+					array(
+						'value' => 'Mr',
+						'label' => __( 'Mr', 'understrap-child' ),
+					),
+					array(
+						'value' => 'Mrs',
+						'label' => __( 'Mrs', 'understrap-child' ),
+					),
+					array(
+						'value' => 'Miss',
+						'label' => __( 'Miss', 'understrap-child' ),
+					),
+					array(
+						'value' => 'Ms',
+						'label' => __( 'Ms', 'understrap-child' ),
+					),
+				),
+			)
+		);
+
+		woocommerce_register_additional_checkout_field(
+			array(
+				'id'       => 'cff/occupation',
+				'label'    => __( 'Occupation', 'understrap-child' ),
+				'location' => 'order',
+				'type'     => 'text',
+				'required' => false,
+			)
+		);
+
+		woocommerce_register_additional_checkout_field(
+			array(
+				'id'       => 'cff/place-of-birth',
+				'label'    => __( 'Place of birth/Region', 'understrap-child' ),
+				'location' => 'order',
+				'type'     => 'text',
+				'required' => false,
+			)
+		);
+
+		woocommerce_register_additional_checkout_field(
+			array(
+				'id'         => 'cff/date-of-birth',
+				'label'      => __( 'Date of birth (dd/mm/yyyy)', 'understrap-child' ),
+				'location'   => 'order',
+				'type'       => 'text',
+				'required'   => false,
+				'attributes' => array(
+					'placeholder' => 'dd/mm/yyyy',
+					'pattern'     => '(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/([0-9]{4})',
+					'maxlength'   => '10',
+					'inputmode'   => 'numeric',
+				),
+			)
+		);
 	}
-
-	woocommerce_register_additional_checkout_field(
-	array(
-		'id'       => 'cff/member-title',
-		'label'    => __( 'Title', 'understrap-child' ),
-		'location' => 'address',
-		'type'     => 'select',
-		'required' => true,
-		'index'    => 1,
-		'options'  => array(
-			array(
-				'value' => 'Mr',
-				'label' => __( 'Mr', 'understrap-child' ),
-			),
-			array(
-				'value' => 'Mrs',
-				'label' => __( 'Mrs', 'understrap-child' ),
-			),
-			array(
-				'value' => 'Miss',
-				'label' => __( 'Miss', 'understrap-child' ),
-			),
-			array(
-				'value' => 'Ms',
-				'label' => __( 'Ms', 'understrap-child' ),
-			),
-		),
-	)
 );
 
-	woocommerce_register_additional_checkout_field(
-		array(
-			'id'       => 'cff/occupation',
-			'label'    => __( 'Occupation', 'understrap-child' ),
-			'location' => 'order',
-			'type'     => 'text',
-			'required' => true,
-		)
-	);
+/**
+ * Validate membership fields only when purchasing a membership.
+ */
+add_action(
+	'woocommerce_validate_additional_field',
+	function( WP_Error $errors, $field_key, $field_value ) {
+		if ( ! cff_cart_contains_membership_product() ) {
+			return;
+		}
 
-	woocommerce_register_additional_checkout_field(
-		array(
-			'id'       => 'cff/place-of-birth',
-			'label'    => __( 'Place of birth/Region', 'understrap-child' ),
-			'location' => 'order',
-			'type'     => 'text',
-			'required' => true,
-		)
-	);
+		$required_fields = array(
+			'cff/member-title'    => __( 'Please select your title.', 'understrap-child' ),
+			'cff/occupation'      => __( 'Please enter your occupation.', 'understrap-child' ),
+			'cff/place-of-birth'  => __( 'Please enter your place of birth.', 'understrap-child' ),
+			'cff/date-of-birth'   => __( 'Please enter your date of birth.', 'understrap-child' ),
+		);
 
-	woocommerce_register_additional_checkout_field (
-		array(
-			'id'       => 'cff/date-of-birth',
-			'label'    => __( 'Date of birth (dd/mm/yyyy)', 'understrap-child' ),
-			'location' => 'order',
-			'type'     => 'text',
-			'required' => true,
-			'attributes' => array(
-				'placeholder' => 'dd/mm/yyyy',
-				'pattern'     => '(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/([0-9]{4})',
-				'maxlength'   => '10',
-				'inputmode'   => 'numeric',
-			),
-		)
-	);
+		if ( isset( $required_fields[ $field_key ] ) && empty( $field_value ) ) {
+			$errors->add(
+				'cff_required_' . sanitize_key( str_replace( '/', '_', $field_key ) ),
+				$required_fields[ $field_key ]
+			);
+		}
 
-});
+		if ( 'cff/date-of-birth' === $field_key && ! empty( $field_value ) ) {
+			$valid_date = preg_match(
+				'/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/([0-9]{4})$/',
+				$field_value
+			);
 
+			if ( ! $valid_date ) {
+				$errors->add(
+					'cff_invalid_date_of_birth',
+					__( 'Please enter your date of birth in dd/mm/yyyy format.', 'understrap-child' )
+				);
+			}
+		}
+	},
+	10,
+	3
+);
 
 add_filter( 'woocommerce_get_privacy_policy_url', function( $url ) {
 	return 'https://circleforfriends.com.au/wp-content/uploads/2026/05/privacy-policy.pdf';

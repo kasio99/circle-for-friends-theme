@@ -14969,6 +14969,18 @@ figure.woocommerce-product-gallery__wrapper {
   --bs-link-hover-color: #162568;
 }
 
+body.cff-cart-has-no-membership #billing-fields .wc-block-components-address-form__cff-member-title,
+body.cff-cart-has-no-membership #order-fields {
+  display: none !important;
+}
+
+body.cff-cart-has-membership #billing-fields .wc-block-components-address-form__cff-member-title {
+  display: block;
+}
+body.cff-cart-has-membership #order-fields {
+  display: block;
+}
+
 .wrapper {
   padding: 0;
 }
@@ -15639,6 +15651,43 @@ figure.woocommerce-product-gallery__wrapper {
   .cff-featured-event__meta {
     grid-template-columns: 1fr;
   }
+}
+
+.cff-event-quantity {
+  margin: 2rem 0 1.5rem;
+}
+.cff-event-quantity label {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1f2f7a;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.cff-event-quantity .quantity {
+  display: inline-block;
+}
+.cff-event-quantity .quantity input.qty {
+  width: 120px;
+  height: 60px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  border: 2px solid #d7dff2;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.single-product form.cart {
+  max-width: 500px;
+}
+.single-product .single_add_to_cart_button {
+  width: 100%;
+  margin-top: 1rem;
+  min-height: 64px;
+  font-size: 1.3rem;
+  font-weight: 700;
 }
 
 .cff-contact-section {
