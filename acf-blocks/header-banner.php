@@ -33,7 +33,7 @@ if ( ! empty( $block['align'] ) ) {
 	<div class="container">
 		<div class="acf-header-banner__inner row align-items-center">
 
-			<div class="acf-header-banner__content col-12 col-lg-7">
+			<div class="acf-header-banner__content col-12 col-lg-6">
 				<?php if ( $eyebrow_text ) : ?>
 					<p class="acf-header-banner__eyebrow">
 						<?php echo esc_html( $eyebrow_text ); ?>
@@ -65,7 +65,7 @@ if ( ! empty( $block['align'] ) ) {
 				<?php endif; ?>
 			</div>
 
-			<div class="acf-header-banner__image-col col-12 col-lg-5">
+			<div class="acf-header-banner__image-col col-12 col-lg-6">
 				<?php if ( $banner_image ) : ?>
 					<?php
 					$image_url = is_array( $banner_image ) && ! empty( $banner_image['url'] ) ? $banner_image['url'] : '';
