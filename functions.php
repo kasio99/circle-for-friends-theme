@@ -66,6 +66,30 @@ function cff_fontawesome_script_attributes( $tag, $handle, $src ) {
 }
 add_filter( 'script_loader_tag', 'cff_fontawesome_script_attributes', 10, 3 );
 
+/**
+ * Enqueue event ticket attendee fields script.
+ */
+function cff_enqueue_event_ticket_script() {
+	if ( ! function_exists( 'is_product' ) || ! is_product() ) {
+		return;
+	}
+
+	$product_id = get_queried_object_id();
+
+	if ( ! $product_id || ! has_term( 'event', 'product_cat', $product_id ) ) {
+		return;
+	}
+
+	wp_enqueue_script(
+		'cff-event-tickets',
+		get_stylesheet_directory_uri() . '/js/cff-event-tickets.js',
+		array(),
+		filemtime( get_stylesheet_directory() . '/js/cff-event-tickets.js' ),
+		true
+	);
+}
+add_action( 'wp_enqueue_scripts', 'cff_enqueue_event_ticket_script' );
+
 
 
 /**
@@ -209,6 +233,8 @@ function cff_custom_add_to_cart_button() {
 				?>
 			</div>
 
+			<?php cff_render_event_ticket_fields(); ?>
+
 		<?php endif; ?>
 
 		<button
@@ -223,8 +249,415 @@ function cff_custom_add_to_cart_button() {
 	<?php
 }
 
+/**
+ * Dietary requirement options for event ticket attendees.
+ */
+function cff_get_dietary_requirement_options() {
+	return array(
+		'vegetarian'  => __( 'Vegetarian', 'understrap-child' ),
+		'vegan'       => __( 'Vegan', 'understrap-child' ),
+		'gluten-free' => __( 'Gluten free', 'understrap-child' ),
+		'dairy-free'  => __( 'Dairy free', 'understrap-child' ),
+		'nut-allergy' => __( 'Nut allergy', 'understrap-child' ),
+		'other'       => __( 'Other', 'understrap-child' ),
+	);
+}
 
-// Ensure only 1 membership can be purchased.
+/**
+ * Render optional per-ticket attendee fields on event product pages.
+ */
+function cff_render_event_ticket_fields() {
+	$options = cff_get_dietary_requirement_options();
+	?>
+
+	<div class="cff-event-ticket-fields" data-cff-event-ticket-fields data-max-tickets="20">
+		<h3><?php esc_html_e( 'Ticket details', 'understrap-child' ); ?></h3>
+		<p><?php esc_html_e( 'Optional. Add attendee names and dietary requirements now, or leave blank if you do not know yet.', 'understrap-child' ); ?></p>
+
+		<div class="cff-event-ticket-fields__list" data-cff-event-ticket-list></div>
+
+		<template data-cff-event-ticket-template>
+			<div class="cff-event-ticket" data-cff-event-ticket>
+				<h4 data-cff-ticket-heading><?php esc_html_e( 'Ticket', 'understrap-child' ); ?></h4>
+
+				<label>
+					<span><?php esc_html_e( 'Attendee name', 'understrap-child' ); ?></span>
+					<input type="text" data-cff-ticket-name placeholder="<?php esc_attr_e( 'Optional', 'understrap-child' ); ?>" />
+				</label>
+
+				<fieldset>
+					<legend><?php esc_html_e( 'Dietary requirements', 'understrap-child' ); ?></legend>
+
+					<?php foreach ( $options as $value => $label ) : ?>
+						<label class="cff-event-ticket__check">
+							<input type="checkbox" data-cff-ticket-dietary value="<?php echo esc_attr( $value ); ?>" />
+							<span><?php echo esc_html( $label ); ?></span>
+						</label>
+					<?php endforeach; ?>
+				</fieldset>
+
+				<label class="cff-event-ticket__other" data-cff-ticket-other-wrap hidden>
+					<span><?php esc_html_e( 'Please specify', 'understrap-child' ); ?></span>
+					<input type="text" data-cff-ticket-other placeholder="<?php esc_attr_e( 'Optional', 'understrap-child' ); ?>" />
+				</label>
+			</div>
+		</template>
+	</div>
+
+	<?php
+}
+
+/**
+ * Sanitise optional event ticket attendee data posted from the product form.
+ */
+function cff_get_event_ticket_details_from_product_post() {
+	if ( empty( $_POST['cff_event_tickets'] ) || ! is_array( $_POST['cff_event_tickets'] ) ) {
+		return array();
+	}
+
+	$allowed_dietary_options = array_keys( cff_get_dietary_requirement_options() );
+	$quantity                = isset( $_POST['quantity'] ) ? max( 1, absint( wp_unslash( $_POST['quantity'] ) ) ) : 1;
+	$quantity                = min( 20, $quantity );
+	$posted_tickets          = wp_unslash( $_POST['cff_event_tickets'] );
+	$tickets                 = array();
+
+	for ( $index = 0; $index < $quantity; $index++ ) {
+		$posted_ticket = isset( $posted_tickets[ $index ] ) && is_array( $posted_tickets[ $index ] )
+			? $posted_tickets[ $index ]
+			: array();
+
+		$name    = isset( $posted_ticket['name'] ) ? sanitize_text_field( $posted_ticket['name'] ) : '';
+		$other   = isset( $posted_ticket['other'] ) ? sanitize_text_field( $posted_ticket['other'] ) : '';
+		$dietary = array();
+
+		if ( isset( $posted_ticket['dietary'] ) && is_array( $posted_ticket['dietary'] ) ) {
+			foreach ( $posted_ticket['dietary'] as $dietary_value ) {
+				$dietary_value = sanitize_key( $dietary_value );
+
+				if ( in_array( $dietary_value, $allowed_dietary_options, true ) ) {
+					$dietary[] = $dietary_value;
+				}
+			}
+		}
+
+		$dietary = array_values( array_unique( $dietary ) );
+		$other   = in_array( 'other', $dietary, true ) ? $other : '';
+
+		if ( '' === $name && empty( $dietary ) && '' === $other ) {
+			continue;
+		}
+
+		$tickets[] = array(
+			'ticket_number' => $index + 1,
+			'name'          => $name,
+			'dietary'       => $dietary,
+			'other'         => $other,
+		);
+	}
+
+	return $tickets;
+}
+
+/**
+ * Add optional event ticket attendee details to the cart item.
+ */
+function cff_add_event_ticket_details_to_cart_item( $cart_item_data, $product_id ) {
+	if ( ! has_term( 'event', 'product_cat', $product_id ) ) {
+		return $cart_item_data;
+	}
+
+	$tickets = cff_get_event_ticket_details_from_product_post();
+
+	if ( empty( $tickets ) ) {
+		return $cart_item_data;
+	}
+
+	$cart_item_data['cff_event_tickets']      = $tickets;
+	$cart_item_data['cff_event_tickets_hash'] = md5( wp_json_encode( $tickets ) );
+
+	return $cart_item_data;
+}
+add_filter( 'woocommerce_add_cart_item_data', 'cff_add_event_ticket_details_to_cart_item', 10, 2 );
+
+/**
+ * Format event ticket details for cart/order display.
+ */
+function cff_format_event_ticket_details( $tickets ) {
+	$options = cff_get_dietary_requirement_options();
+	$lines   = array();
+
+	foreach ( $tickets as $ticket ) {
+		$parts = array();
+
+		if ( ! empty( $ticket['name'] ) ) {
+			$parts[] = sprintf(
+				/* translators: %s: attendee name. */
+				__( 'Name: %s', 'understrap-child' ),
+				$ticket['name']
+			);
+		}
+
+		if ( ! empty( $ticket['dietary'] ) ) {
+			$dietary_labels = array();
+
+			foreach ( $ticket['dietary'] as $dietary_value ) {
+				$dietary_labels[] = isset( $options[ $dietary_value ] ) ? $options[ $dietary_value ] : $dietary_value;
+			}
+
+			if ( ! empty( $ticket['other'] ) && in_array( 'other', $ticket['dietary'], true ) ) {
+				$dietary_labels[] = $ticket['other'];
+			}
+
+			$parts[] = sprintf(
+				/* translators: %s: dietary requirements. */
+				__( 'Dietary: %s', 'understrap-child' ),
+				implode( ', ', $dietary_labels )
+			);
+		}
+
+		if ( empty( $parts ) ) {
+			continue;
+		}
+
+		$lines[] = sprintf(
+			/* translators: 1: ticket number, 2: ticket details. */
+			__( 'Ticket %1$d - %2$s', 'understrap-child' ),
+			(int) $ticket['ticket_number'],
+			implode( '; ', $parts )
+		);
+	}
+
+	return implode( "\n", $lines );
+}
+
+/**
+ * Show event ticket details against the cart item.
+ */
+function cff_show_event_ticket_details_in_cart( $item_data, $cart_item ) {
+	if ( empty( $cart_item['cff_event_tickets'] ) || ! is_array( $cart_item['cff_event_tickets'] ) ) {
+		return $item_data;
+	}
+
+	$item_data[] = array(
+		'key'     => __( 'Ticket details', 'understrap-child' ),
+		'value'   => nl2br( esc_html( cff_format_event_ticket_details( $cart_item['cff_event_tickets'] ) ) ),
+		'display' => nl2br( esc_html( cff_format_event_ticket_details( $cart_item['cff_event_tickets'] ) ) ),
+	);
+
+	return $item_data;
+}
+add_filter( 'woocommerce_get_item_data', 'cff_show_event_ticket_details_in_cart', 10, 2 );
+
+/**
+ * Check if the cart contains an event-category product.
+ */
+function cff_cart_contains_event_product() {
+	if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+		return false;
+	}
+
+	foreach ( WC()->cart->get_cart() as $cart_item ) {
+		$product_id = isset( $cart_item['product_id'] ) ? (int) $cart_item['product_id'] : 0;
+
+		if ( $product_id && has_term( 'event', 'product_cat', $product_id ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Get event products currently in the cart.
+ */
+function cff_get_cart_event_items() {
+	if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+		return array();
+	}
+
+	$event_items = array();
+
+	foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
+		$product_id = isset( $cart_item['product_id'] ) ? (int) $cart_item['product_id'] : 0;
+
+		if ( ! $product_id || ! has_term( 'event', 'product_cat', $product_id ) ) {
+			continue;
+		}
+
+		$product = wc_get_product( $product_id );
+
+		$event_items[] = array(
+			'cart_item_key' => $cart_item_key,
+			'product_id'     => $product_id,
+			'product_name'   => $product ? $product->get_name() : __( 'Event ticket', 'understrap-child' ),
+			'quantity'       => isset( $cart_item['quantity'] ) ? (int) $cart_item['quantity'] : 1,
+		);
+	}
+
+	return $event_items;
+}
+
+/**
+ * Check if an order contains an event-category product.
+ *
+ * @param WC_Order $order Order object.
+ */
+function cff_order_contains_event_product( $order ) {
+	if ( ! $order instanceof WC_Order ) {
+		return false;
+	}
+
+	foreach ( $order->get_items() as $item ) {
+		$product_id = $item->get_product_id();
+
+		if ( $product_id && has_term( 'event', 'product_cat', $product_id ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Get any attendee details posted for an event ticket line item.
+ *
+ * Kept for classic checkout fallback. The live checkout page uses Checkout Blocks.
+ */
+function cff_get_event_ticket_details_from_post( $cart_item_key ) {
+	if ( isset( $_POST['cff_event_ticket_details'] ) && is_array( $_POST['cff_event_ticket_details'] ) ) {
+		$value = isset( $_POST['cff_event_ticket_details'][ $cart_item_key ] ) ? wp_unslash( $_POST['cff_event_ticket_details'][ $cart_item_key ] ) : '';
+		return sanitize_textarea_field( $value );
+	}
+
+	return '';
+}
+
+/**
+ * Render optional attendee fields on checkout when event products are in the cart.
+ */
+function cff_render_event_attendee_fields() {
+	if ( ! cff_cart_contains_event_product() ) {
+		return;
+	}
+
+	$event_items = cff_get_cart_event_items();
+	if ( empty( $event_items ) ) {
+		return;
+	}
+	?>
+
+	<div class="cff-event-ticket-details">
+		<h3><?php esc_html_e( 'Ticket attendee details', 'understrap-child' ); ?></h3>
+		<p class="small text-muted">
+			<?php esc_html_e( 'Optional. Leave blank if you do not know attendee names yet. Add one line per ticket, for example: Jane Doe — no nuts.', 'understrap-child' ); ?>
+		</p>
+
+		<?php foreach ( $event_items as $item ) : ?>
+			<div class="cff-event-ticket-detail-field" style="margin-bottom: 1rem;">
+				<label for="cff_event_ticket_details_<?php echo esc_attr( $item['cart_item_key'] ); ?>">
+					<?php echo esc_html( sprintf( __( 'Attendee details for %s', 'understrap-child' ), $item['product_name'] ) ); ?>
+				</label>
+				<textarea
+					id="cff_event_ticket_details_<?php echo esc_attr( $item['cart_item_key'] ); ?>"
+					name="cff_event_ticket_details[<?php echo esc_attr( $item['cart_item_key'] ); ?>]"
+					rows="4"
+					placeholder="<?php esc_attr_e( 'Optional. Example: Ticket 1 — Jane Doe, no nuts', 'understrap-child' ); ?>"
+				></textarea>
+			</div>
+		<?php endforeach; ?>
+	</div>
+
+	<?php
+}
+add_action( 'woocommerce_checkout_before_order_review', 'cff_render_event_attendee_fields' );
+// Also render before payment block for classic templates that output order review/payment separately.
+add_action( 'woocommerce_review_order_before_payment', 'cff_render_event_attendee_fields' );
+
+/**
+ * Enqueue frontend script to inject attendee fields on Block or classic checkout.
+ */
+function cff_enqueue_event_checkout_script() {
+	return;
+
+	if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
+		return;
+	}
+
+	wp_enqueue_script(
+		'cff-event-checkout',
+		get_stylesheet_directory_uri() . '/js/cff-event-checkout.js',
+		array(),
+		filemtime( get_stylesheet_directory() . '/js/cff-event-checkout.js' ),
+		true
+	);
+
+	$items = cff_get_cart_event_items();
+	$data = array(
+		'event_items' => $items,
+	);
+
+	wp_add_inline_script( 'cff-event-checkout', 'window._cff_event_checkout_data = ' . wp_json_encode( $data ) . ';' );
+}
+add_action( 'wp_enqueue_scripts', 'cff_enqueue_event_checkout_script' );
+
+/**
+ * Save optional attendee details to the event order line item.
+ */
+function cff_save_event_ticket_details_to_order_item( $item, $cart_item_key, $values, $order ) {
+	if ( empty( $values['cff_event_tickets'] ) || ! is_array( $values['cff_event_tickets'] ) ) {
+		return;
+	}
+
+	$options = cff_get_dietary_requirement_options();
+
+	foreach ( $values['cff_event_tickets'] as $ticket ) {
+		$ticket_number = isset( $ticket['ticket_number'] ) ? absint( $ticket['ticket_number'] ) : 0;
+
+		if ( ! $ticket_number ) {
+			continue;
+		}
+
+		if ( ! empty( $ticket['name'] ) ) {
+			$item->add_meta_data(
+				sprintf(
+					/* translators: %d: ticket number. */
+					__( 'Ticket %d attendee', 'understrap-child' ),
+					$ticket_number
+				),
+				$ticket['name'],
+				true
+			);
+		}
+
+		if ( empty( $ticket['dietary'] ) ) {
+			continue;
+		}
+
+		$dietary_labels = array();
+
+		foreach ( $ticket['dietary'] as $dietary_value ) {
+			$dietary_labels[] = isset( $options[ $dietary_value ] ) ? $options[ $dietary_value ] : $dietary_value;
+		}
+
+		if ( ! empty( $ticket['other'] ) && in_array( 'other', $ticket['dietary'], true ) ) {
+			$dietary_labels[] = $ticket['other'];
+		}
+
+		$item->add_meta_data(
+			sprintf(
+				/* translators: %d: ticket number. */
+				__( 'Ticket %d dietary requirements', 'understrap-child' ),
+				$ticket_number
+			),
+			implode( ', ', $dietary_labels ),
+			true
+		);
+	}
+}
+add_action( 'woocommerce_checkout_create_order_line_item', 'cff_save_event_ticket_details_to_order_item', 10, 4 );
+remove_action( 'wp_enqueue_scripts', 'cff_enqueue_event_checkout_script' );
+
+// Ensure only 1 members371616p can be purchased.
 add_filter(
 	'woocommerce_is_sold_individually',
 	function( $sold_individually, $product ) {
@@ -358,6 +791,7 @@ add_action(
 				),
 			)
 		);
+
 	}
 );
 
