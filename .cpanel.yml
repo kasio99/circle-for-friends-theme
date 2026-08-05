@@ -2,4 +2,4 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home1/circlefo/public_html/staging/wp-content/themes/understrap-child/
-    - /usr/bin/rsync -a --delete --exclude='.git/' --exclude='.cpanel.yml' ./ $DEPLOYPATH
+    - /usr/bin/rsync -rltD --delete --exclude='.git/' --exclude='.cpanel.yml' --chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r ./ $DEPLOYPATH

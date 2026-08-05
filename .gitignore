@@ -26,6 +26,7 @@
 !.gitattributes
 !.github
 !.gitignore
+!.cpanel.yml
 
 # Ignore all files with .lock extentions
 *.lock
