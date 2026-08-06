@@ -90,6 +90,30 @@ function cff_enqueue_event_ticket_script() {
 }
 add_action( 'wp_enqueue_scripts', 'cff_enqueue_event_ticket_script' );
 
+/**
+ * Enqueue membership person fields script.
+ */
+function cff_enqueue_membership_details_script() {
+	if ( ! function_exists( 'is_product' ) || ! is_product() ) {
+		return;
+	}
+
+	$product_id = get_queried_object_id();
+
+	if ( ! $product_id || ! has_term( 'membership', 'product_cat', $product_id ) ) {
+		return;
+	}
+
+	wp_enqueue_script(
+		'cff-membership-details',
+		get_stylesheet_directory_uri() . '/js/cff-membership-details.js',
+		array(),
+		filemtime( get_stylesheet_directory() . '/js/cff-membership-details.js' ),
+		true
+	);
+}
+add_action( 'wp_enqueue_scripts', 'cff_enqueue_membership_details_script' );
+
 
 
 /**
@@ -215,11 +239,17 @@ function cff_custom_add_to_cart_button() {
 
 		<input type="hidden" name="add-to-cart" value="<?php echo esc_attr( $product_id ); ?>" />
 
-		<?php if ( $is_event ) : ?>
+		<?php if ( $is_event || $is_membership ) : ?>
 
 			<div class="cff-event-quantity">
 				<label for="quantity">
-					<?php esc_html_e( 'Select Number of Tickets', 'understrap-child' ); ?>
+					<?php
+					echo esc_html(
+						$is_membership
+							? __( 'Select Number of Memberships', 'understrap-child' )
+							: __( 'Select Number of Tickets', 'understrap-child' )
+					);
+					?>
 				</label>
 
 				<?php
@@ -233,7 +263,15 @@ function cff_custom_add_to_cart_button() {
 				?>
 			</div>
 
+		<?php endif; ?>
+
+		<?php if ( $is_event ) : ?>
+
 			<?php cff_render_event_ticket_fields(); ?>
+
+		<?php elseif ( $is_membership ) : ?>
+
+			<?php cff_render_membership_person_fields(); ?>
 
 		<?php endif; ?>
 
@@ -449,6 +487,192 @@ function cff_show_event_ticket_details_in_cart( $item_data, $cart_item ) {
 add_filter( 'woocommerce_get_item_data', 'cff_show_event_ticket_details_in_cart', 10, 2 );
 
 /**
+ * Render required per-person membership fields on membership product pages.
+ */
+function cff_render_membership_person_fields() {
+	?>
+
+	<div class="cff-membership-person-fields" data-cff-membership-fields data-max-memberships="20">
+		<h3><?php esc_html_e( 'Membership details', 'understrap-child' ); ?></h3>
+		<p><?php esc_html_e( 'Each membership must belong to a specific person.', 'understrap-child' ); ?></p>
+
+		<div class="cff-membership-person-fields__list" data-cff-membership-list></div>
+
+		<template data-cff-membership-template>
+			<div class="cff-membership-person" data-cff-membership-person>
+				<h4 data-cff-membership-heading><?php esc_html_e( 'Membership', 'understrap-child' ); ?></h4>
+
+				<label>
+					<span><?php esc_html_e( 'Name', 'understrap-child' ); ?></span>
+					<input type="text" data-cff-membership-name required />
+				</label>
+
+				<label>
+					<span><?php esc_html_e( 'Occupation', 'understrap-child' ); ?></span>
+					<input type="text" data-cff-membership-occupation required />
+				</label>
+
+				<label>
+					<span><?php esc_html_e( 'Date of birth (dd/mm/yyyy)', 'understrap-child' ); ?></span>
+					<input type="text" data-cff-membership-date-of-birth placeholder="dd/mm/yyyy" pattern="(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/([0-9]{4})" maxlength="10" inputmode="numeric" required />
+				</label>
+
+				<label>
+					<span><?php esc_html_e( 'Place of birth/Region', 'understrap-child' ); ?></span>
+					<input type="text" data-cff-membership-place-of-birth required />
+				</label>
+			</div>
+		</template>
+	</div>
+
+	<?php
+}
+
+/**
+ * Sanitise required membership details posted from the product form.
+ */
+function cff_get_membership_details_from_product_post( $quantity ) {
+	if ( empty( $_POST['cff_memberships'] ) || ! is_array( $_POST['cff_memberships'] ) ) {
+		return array();
+	}
+
+	$quantity           = min( 20, max( 1, absint( $quantity ) ) );
+	$posted_memberships = wp_unslash( $_POST['cff_memberships'] );
+	$memberships        = array();
+
+	for ( $index = 0; $index < $quantity; $index++ ) {
+		$posted_membership = isset( $posted_memberships[ $index ] ) && is_array( $posted_memberships[ $index ] )
+			? $posted_memberships[ $index ]
+			: array();
+
+		$memberships[] = array(
+			'membership_number' => $index + 1,
+			'name'              => isset( $posted_membership['name'] ) ? sanitize_text_field( $posted_membership['name'] ) : '',
+			'occupation'        => isset( $posted_membership['occupation'] ) ? sanitize_text_field( $posted_membership['occupation'] ) : '',
+			'date_of_birth'     => isset( $posted_membership['date_of_birth'] ) ? sanitize_text_field( $posted_membership['date_of_birth'] ) : '',
+			'place_of_birth'    => isset( $posted_membership['place_of_birth'] ) ? sanitize_text_field( $posted_membership['place_of_birth'] ) : '',
+		);
+	}
+
+	return $memberships;
+}
+
+/**
+ * Validate required membership details before adding to cart.
+ */
+function cff_validate_membership_details_before_add_to_cart( $passed, $product_id, $quantity ) {
+	if ( ! has_term( 'membership', 'product_cat', $product_id ) ) {
+		return $passed;
+	}
+
+	$memberships = cff_get_membership_details_from_product_post( $quantity );
+
+	if ( count( $memberships ) < absint( $quantity ) ) {
+		wc_add_notice( __( 'Please enter details for each membership.', 'understrap-child' ), 'error' );
+		return false;
+	}
+
+	foreach ( $memberships as $membership ) {
+		$membership_number = isset( $membership['membership_number'] ) ? absint( $membership['membership_number'] ) : 0;
+
+		if (
+			empty( $membership['name'] )
+			|| empty( $membership['occupation'] )
+			|| empty( $membership['date_of_birth'] )
+			|| empty( $membership['place_of_birth'] )
+		) {
+			wc_add_notice(
+				sprintf(
+					/* translators: %d: membership number. */
+					__( 'Please complete all fields for membership %d.', 'understrap-child' ),
+					$membership_number
+				),
+				'error'
+			);
+			$passed = false;
+		}
+
+		if (
+			! empty( $membership['date_of_birth'] )
+			&& ! preg_match( '/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/([0-9]{4})$/', $membership['date_of_birth'] )
+		) {
+			wc_add_notice(
+				sprintf(
+					/* translators: %d: membership number. */
+					__( 'Please enter the date of birth for membership %d in dd/mm/yyyy format.', 'understrap-child' ),
+					$membership_number
+				),
+				'error'
+			);
+			$passed = false;
+		}
+	}
+
+	return $passed;
+}
+add_filter( 'woocommerce_add_to_cart_validation', 'cff_validate_membership_details_before_add_to_cart', 10, 3 );
+
+/**
+ * Add required membership details to the cart item.
+ */
+function cff_add_membership_details_to_cart_item( $cart_item_data, $product_id, $variation_id, $quantity ) {
+	if ( ! has_term( 'membership', 'product_cat', $product_id ) ) {
+		return $cart_item_data;
+	}
+
+	$memberships = cff_get_membership_details_from_product_post( $quantity );
+
+	if ( empty( $memberships ) ) {
+		return $cart_item_data;
+	}
+
+	$cart_item_data['cff_memberships']      = $memberships;
+	$cart_item_data['cff_memberships_hash'] = md5( wp_json_encode( $memberships ) );
+
+	return $cart_item_data;
+}
+add_filter( 'woocommerce_add_cart_item_data', 'cff_add_membership_details_to_cart_item', 10, 4 );
+
+/**
+ * Format membership details for cart display.
+ */
+function cff_format_membership_details( $memberships ) {
+	$lines = array();
+
+	foreach ( $memberships as $membership ) {
+		$lines[] = sprintf(
+			/* translators: 1: membership number, 2: name, 3: occupation, 4: date of birth, 5: place of birth. */
+			__( 'Membership %1$d - Name: %2$s; Occupation: %3$s; DOB: %4$s; Place of birth/Region: %5$s', 'understrap-child' ),
+			(int) $membership['membership_number'],
+			$membership['name'],
+			$membership['occupation'],
+			$membership['date_of_birth'],
+			$membership['place_of_birth']
+		);
+	}
+
+	return implode( "\n", $lines );
+}
+
+/**
+ * Show membership details against the cart item.
+ */
+function cff_show_membership_details_in_cart( $item_data, $cart_item ) {
+	if ( empty( $cart_item['cff_memberships'] ) || ! is_array( $cart_item['cff_memberships'] ) ) {
+		return $item_data;
+	}
+
+	$item_data[] = array(
+		'key'     => __( 'Membership details', 'understrap-child' ),
+		'value'   => nl2br( esc_html( cff_format_membership_details( $cart_item['cff_memberships'] ) ) ),
+		'display' => nl2br( esc_html( cff_format_membership_details( $cart_item['cff_memberships'] ) ) ),
+	);
+
+	return $item_data;
+}
+add_filter( 'woocommerce_get_item_data', 'cff_show_membership_details_in_cart', 10, 2 );
+
+/**
  * Check if the cart contains an event-category product.
  */
 function cff_cart_contains_event_product() {
@@ -655,18 +879,60 @@ function cff_save_event_ticket_details_to_order_item( $item, $cart_item_key, $va
 	}
 }
 add_action( 'woocommerce_checkout_create_order_line_item', 'cff_save_event_ticket_details_to_order_item', 10, 4 );
+
+/**
+ * Save required membership details to the membership order line item.
+ */
+function cff_save_membership_details_to_order_item( $item, $cart_item_key, $values, $order ) {
+	if ( empty( $values['cff_memberships'] ) || ! is_array( $values['cff_memberships'] ) ) {
+		return;
+	}
+
+	foreach ( $values['cff_memberships'] as $membership ) {
+		$membership_number = isset( $membership['membership_number'] ) ? absint( $membership['membership_number'] ) : 0;
+
+		if ( ! $membership_number ) {
+			continue;
+		}
+
+		$fields = array(
+			'name'           => __( 'name', 'understrap-child' ),
+			'occupation'     => __( 'occupation', 'understrap-child' ),
+			'date_of_birth'  => __( 'date of birth', 'understrap-child' ),
+			'place_of_birth' => __( 'place of birth/region', 'understrap-child' ),
+		);
+
+		foreach ( $fields as $field_key => $field_label ) {
+			if ( empty( $membership[ $field_key ] ) ) {
+				continue;
+			}
+
+			$item->add_meta_data(
+				sprintf(
+					/* translators: 1: membership number, 2: field label. */
+					__( 'Membership %1$d %2$s', 'understrap-child' ),
+					$membership_number,
+					$field_label
+				),
+				$membership[ $field_key ],
+				true
+			);
+		}
+	}
+}
+add_action( 'woocommerce_checkout_create_order_line_item', 'cff_save_membership_details_to_order_item', 10, 4 );
 remove_action( 'wp_enqueue_scripts', 'cff_enqueue_event_checkout_script' );
 
-// Ensure only 1 members371616p can be purchased.
+// Allow membership quantities so details can be captured for each person.
 add_filter(
 	'woocommerce_is_sold_individually',
 	function( $sold_individually, $product ) {
 
 		if ( has_term( 'membership', 'product_cat', $product->get_id() ) ) {
-			return true;
+			return false;
 		}
 
-		return false;
+		return $sold_individually;
 	},
 	10,
 	2
@@ -675,167 +941,6 @@ add_filter(
 add_filter( 'woocommerce_add_to_cart_redirect', function () {
 	return wc_get_checkout_url();
 } );
-
-// Additional membership product checkout fields.
-
-/**
- * Check if the cart contains a membership product.
- */
-function cff_cart_contains_membership_product() {
-	if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
-		return false;
-	}
-
-	foreach ( WC()->cart->get_cart() as $cart_item ) {
-		$product_id = isset( $cart_item['product_id'] ) ? (int) $cart_item['product_id'] : 0;
-
-		if ( $product_id && has_term( 'membership', 'product_cat', $product_id ) ) {
-			return true;
-		}
-	}
-
-	return false;
-}
-
-/**
- * Add checkout body class so we can hide membership-only fields for events.
- */
-add_filter(
-	'body_class',
-	function( $classes ) {
-		if ( function_exists( 'is_checkout' ) && is_checkout() && ! is_order_received_page() ) {
-			$classes[] = cff_cart_contains_membership_product()
-				? 'cff-cart-has-membership'
-				: 'cff-cart-has-no-membership';
-		}
-
-		return $classes;
-	}
-);
-
-/**
- * Add membership fields to WooCommerce Blocks checkout.
- */
-add_action(
-	'woocommerce_init',
-	function() {
-		if ( ! function_exists( 'woocommerce_register_additional_checkout_field' ) ) {
-			return;
-		}
-
-		woocommerce_register_additional_checkout_field(
-			array(
-				'id'       => 'cff/member-title',
-				'label'    => __( 'Title', 'understrap-child' ),
-				'location' => 'address',
-				'type'     => 'select',
-				'required' => false,
-				'index'    => 1,
-				'options'  => array(
-					array(
-						'value' => '',
-						'label' => __( 'Select a title', 'understrap-child' ),
-					),
-					array(
-						'value' => 'Mr',
-						'label' => __( 'Mr', 'understrap-child' ),
-					),
-					array(
-						'value' => 'Mrs',
-						'label' => __( 'Mrs', 'understrap-child' ),
-					),
-					array(
-						'value' => 'Miss',
-						'label' => __( 'Miss', 'understrap-child' ),
-					),
-					array(
-						'value' => 'Ms',
-						'label' => __( 'Ms', 'understrap-child' ),
-					),
-				),
-			)
-		);
-
-		woocommerce_register_additional_checkout_field(
-			array(
-				'id'       => 'cff/occupation',
-				'label'    => __( 'Occupation', 'understrap-child' ),
-				'location' => 'order',
-				'type'     => 'text',
-				'required' => false,
-			)
-		);
-
-		woocommerce_register_additional_checkout_field(
-			array(
-				'id'       => 'cff/place-of-birth',
-				'label'    => __( 'Place of birth/Region', 'understrap-child' ),
-				'location' => 'order',
-				'type'     => 'text',
-				'required' => false,
-			)
-		);
-
-		woocommerce_register_additional_checkout_field(
-			array(
-				'id'         => 'cff/date-of-birth',
-				'label'      => __( 'Date of birth (dd/mm/yyyy)', 'understrap-child' ),
-				'location'   => 'order',
-				'type'       => 'text',
-				'required'   => false,
-				'attributes' => array(
-					'placeholder' => 'dd/mm/yyyy',
-					'pattern'     => '(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/([0-9]{4})',
-					'maxlength'   => '10',
-					'inputmode'   => 'numeric',
-				),
-			)
-		);
-
-	}
-);
-
-/**
- * Validate membership fields only when purchasing a membership.
- */
-add_action(
-	'woocommerce_validate_additional_field',
-	function( WP_Error $errors, $field_key, $field_value ) {
-		if ( ! cff_cart_contains_membership_product() ) {
-			return;
-		}
-
-		$required_fields = array(
-			'cff/member-title'    => __( 'Please select your title.', 'understrap-child' ),
-			'cff/occupation'      => __( 'Please enter your occupation.', 'understrap-child' ),
-			'cff/place-of-birth'  => __( 'Please enter your place of birth.', 'understrap-child' ),
-			'cff/date-of-birth'   => __( 'Please enter your date of birth.', 'understrap-child' ),
-		);
-
-		if ( isset( $required_fields[ $field_key ] ) && empty( $field_value ) ) {
-			$errors->add(
-				'cff_required_' . sanitize_key( str_replace( '/', '_', $field_key ) ),
-				$required_fields[ $field_key ]
-			);
-		}
-
-		if ( 'cff/date-of-birth' === $field_key && ! empty( $field_value ) ) {
-			$valid_date = preg_match(
-				'/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/([0-9]{4})$/',
-				$field_value
-			);
-
-			if ( ! $valid_date ) {
-				$errors->add(
-					'cff_invalid_date_of_birth',
-					__( 'Please enter your date of birth in dd/mm/yyyy format.', 'understrap-child' )
-				);
-			}
-		}
-	},
-	10,
-	3
-);
 
 add_filter( 'woocommerce_get_privacy_policy_url', function( $url ) {
 	return 'https://circleforfriends.com.au/wp-content/uploads/2026/05/privacy-policy.pdf';

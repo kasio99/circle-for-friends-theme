@@ -14969,18 +14969,6 @@ figure.woocommerce-product-gallery__wrapper {
   --bs-link-hover-color: #162568;
 }
 
-body.cff-cart-has-no-membership #billing-fields .wc-block-components-address-form__cff-member-title,
-body.cff-cart-has-no-membership #order-fields {
-  display: none !important;
-}
-
-body.cff-cart-has-membership #billing-fields .wc-block-components-address-form__cff-member-title {
-  display: block;
-}
-body.cff-cart-has-membership #order-fields {
-  display: block;
-}
-
 .wrapper {
   padding: 0;
 }
@@ -15679,51 +15667,64 @@ body.cff-cart-has-membership #order-fields {
   background: #fff;
 }
 
-.cff-event-ticket-fields {
+.cff-event-ticket-fields,
+.cff-membership-person-fields {
   margin: 1.5rem 0 2rem;
   padding: 1.25rem;
   border: 1px solid #d7dff2;
   border-radius: 8px;
   background: #fff;
 }
-.cff-event-ticket-fields h3, .cff-event-ticket-fields .h3 {
+.cff-event-ticket-fields h3, .cff-event-ticket-fields .h3,
+.cff-membership-person-fields h3,
+.cff-membership-person-fields .h3 {
   margin-bottom: 0.35rem;
   font-size: 1.25rem;
   color: #1f2f7a;
 }
-.cff-event-ticket-fields p {
+.cff-event-ticket-fields p,
+.cff-membership-person-fields p {
   margin-bottom: 1rem;
   color: #4c5675;
 }
 
-.cff-event-ticket {
+.cff-event-ticket,
+.cff-membership-person {
   padding: 1rem 0;
   border-top: 1px solid #e6ebf7;
 }
-.cff-event-ticket:first-child {
+.cff-event-ticket:first-child,
+.cff-membership-person:first-child {
   border-top: 0;
   padding-top: 0;
 }
-.cff-event-ticket h4, .cff-event-ticket .h4 {
+.cff-event-ticket h4, .cff-event-ticket .h4,
+.cff-membership-person h4,
+.cff-membership-person .h4 {
   margin-bottom: 0.75rem;
   font-size: 1rem;
   font-weight: 700;
   color: #1f2f7a;
 }
 .cff-event-ticket label,
-.cff-event-ticket fieldset {
+.cff-event-ticket fieldset,
+.cff-membership-person label,
+.cff-membership-person fieldset {
   display: block;
   margin: 0 0 0.85rem;
 }
 .cff-event-ticket span,
-.cff-event-ticket legend {
+.cff-event-ticket legend,
+.cff-membership-person span,
+.cff-membership-person legend {
   display: block;
   margin-bottom: 0.4rem;
   font-size: 0.9rem;
   font-weight: 700;
   color: #24304f;
 }
-.cff-event-ticket input[type=text] {
+.cff-event-ticket input[type=text],
+.cff-membership-person input[type=text] {
   width: 100%;
   min-height: 44px;
   padding: 0.55rem 0.75rem;

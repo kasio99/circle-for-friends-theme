@@ -3,23 +3,6 @@
   --bs-link-hover-color: #{darken($blue, 8%)};
 }
 
-body.cff-cart-has-no-membership {
-  #billing-fields .wc-block-components-address-form__cff-member-title,
-  #order-fields {
-    display: none !important;
-  }
-}
-
-body.cff-cart-has-membership {
-  #billing-fields .wc-block-components-address-form__cff-member-title {
-    display: block;
-  }
-
-  #order-fields {
-    display: block;
-  }
-}
-
 .wrapper {
     padding: 0;
 }
@@ -873,7 +856,8 @@ body.cff-cart-has-membership {
 	}
 }
 
-.cff-event-ticket-fields {
+.cff-event-ticket-fields,
+.cff-membership-person-fields {
 	margin: 1.5rem 0 2rem;
 	padding: 1.25rem;
 	border: 1px solid #d7dff2;
@@ -892,7 +876,8 @@ body.cff-cart-has-membership {
 	}
 }
 
-.cff-event-ticket {
+.cff-event-ticket,
+.cff-membership-person {
 	padding: 1rem 0;
 	border-top: 1px solid #e6ebf7;
 
