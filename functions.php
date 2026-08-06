@@ -221,7 +221,7 @@ function cff_custom_add_to_cart_button() {
 	}
 
 	$product_id   = $product->get_id();
-	$checkout_url = wc_get_checkout_url();
+	$cart_url = wc_get_cart_url();
 
 	$is_membership = has_term( 'membership', 'product_cat', $product_id );
 	$is_event      = has_term( 'event', 'product_cat', $product_id );
@@ -235,7 +235,7 @@ function cff_custom_add_to_cart_button() {
 	}
 	?>
 
-	<form class="cart" action="<?php echo esc_url( $checkout_url ); ?>" method="post">
+	<form class="cart" action="<?php echo esc_url( $cart_url ); ?>" method="post">
 
 		<input type="hidden" name="add-to-cart" value="<?php echo esc_attr( $product_id ); ?>" />
 
@@ -939,7 +939,7 @@ add_filter(
 );
 
 add_filter( 'woocommerce_add_to_cart_redirect', function () {
-	return wc_get_checkout_url();
+	return wc_get_cart_url();
 } );
 
 add_filter( 'woocommerce_get_privacy_policy_url', function( $url ) {
