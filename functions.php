@@ -239,24 +239,55 @@ function cff_custom_add_to_cart_button() {
 
 		<input type="hidden" name="add-to-cart" value="<?php echo esc_attr( $product_id ); ?>" />
 
-		<?php if ( $is_event || $is_membership ) : ?>
+		<?php if ( $is_event ) : ?>
+			<div class="cff-event-purchase-options">
+				<div class="cff-event-purchase-options__row">
+					<div class="cff-event-quantity">
+						<label for="quantity"><?php esc_html_e( 'Select Number of Tickets', 'understrap-child' ); ?></label>
 
-			<div class="cff-event-quantity">
-				<label for="quantity">
+						<?php
+						woocommerce_quantity_input(
+							array(
+								'min_value'   => 1,
+								'max_value'   => 20,
+								'input_value' => 1,
+							)
+						);
+						?>
+					</div>
+
+					<label class="cff-event-purchase-options__check">
+						<input type="checkbox" data-cff-buy-table />
+						<span><?php esc_html_e( 'Buy a Table of 10', 'understrap-child' ); ?></span>
+					</label>
+				</div>
+
+				<p>
 					<?php
-					echo esc_html(
-						$is_membership
-							? __( 'Select Number of Memberships', 'understrap-child' )
-							: __( 'Select Number of Tickets', 'understrap-child' )
+					printf(
+						wp_kses(
+							/* translators: %s: contact us link. */
+							__( 'Corporate sponsorship tables are available. Please %s to discuss sponsorship opportunities.', 'understrap-child' ),
+							array(
+								'a' => array(
+									'href' => array(),
+								),
+							)
+						),
+						'<a href="' . esc_url( home_url( '/contact-us' ) ) . '">' . esc_html__( 'contact us', 'understrap-child' ) . '</a>'
 					);
 					?>
-				</label>
+				</p>
+			</div>
+		<?php elseif ( $is_membership ) : ?>
+			<div class="cff-event-quantity">
+				<label for="quantity"><?php esc_html_e( 'Select Number of Memberships', 'understrap-child' ); ?></label>
 
 				<?php
 				woocommerce_quantity_input(
 					array(
-						'min_value' => 1,
-						'max_value' => 20,
+						'min_value'   => 1,
+						'max_value'   => 20,
 						'input_value' => 1,
 					)
 				);
@@ -310,9 +341,13 @@ function cff_render_event_ticket_fields() {
 
 	<div class="cff-event-ticket-fields" data-cff-event-ticket-fields data-max-tickets="20">
 		<h3><?php esc_html_e( 'Ticket details', 'understrap-child' ); ?></h3>
-		<p><?php esc_html_e( 'Optional. Add attendee names and dietary requirements now, or leave blank if you do not know yet.', 'understrap-child' ); ?></p>
+		<label class="cff-event-ticket-fields__toggle">
+			<input type="checkbox" data-cff-event-ticket-toggle />
+			<span><?php esc_html_e( 'Add attendee names and dietary requirements now', 'understrap-child' ); ?></span>
+		</label>
+		<p><?php esc_html_e( 'If you do not know the attendee details and/or dietary requirements, please email us 2 weeks prior to the event. The details will be on your purchase receipt.', 'understrap-child' ); ?></p>
 
-		<div class="cff-event-ticket-fields__list" data-cff-event-ticket-list></div>
+		<div class="cff-event-ticket-fields__list" data-cff-event-ticket-list hidden></div>
 
 		<template data-cff-event-ticket-template>
 			<div class="cff-event-ticket" data-cff-event-ticket>

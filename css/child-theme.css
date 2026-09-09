@@ -15656,6 +15656,9 @@ figure.woocommerce-product-gallery__wrapper {
 .cff-event-quantity .quantity {
   display: inline-block;
 }
+.cff-event-quantity .quantity.is-locked {
+  pointer-events: none;
+}
 .cff-event-quantity .quantity input.qty {
   width: 120px;
   height: 60px;
@@ -15666,7 +15669,69 @@ figure.woocommerce-product-gallery__wrapper {
   border-radius: 12px;
   background: #fff;
 }
+.cff-event-quantity .quantity input.qty[readonly] {
+  cursor: not-allowed;
+  opacity: 0.72;
+  background: #eef2f8;
+}
 
+.cff-event-purchase-options {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px solid #d7dff2;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+.cff-event-purchase-options .cff-event-quantity {
+  margin: 0;
+}
+.cff-event-purchase-options .cff-event-quantity label {
+  margin-bottom: 0.5rem;
+}
+.cff-event-purchase-options p {
+  margin: 1.25rem 0 0;
+  color: #4c5675;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.cff-event-purchase-options__row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.cff-event-purchase-options__check,
+.cff-event-ticket-fields__toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  margin: 0;
+  color: #24304f;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.cff-event-purchase-options__check input,
+.cff-event-ticket-fields__toggle input {
+  flex: 0 0 auto;
+  margin-top: 0.18rem;
+}
+.cff-event-purchase-options__check span,
+.cff-event-ticket-fields__toggle span {
+  display: inline;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #24304f;
+}
+
+@media (max-width: 575.98px) {
+  .cff-event-purchase-options__row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
 .cff-event-ticket-fields,
 .cff-membership-person-fields {
   margin: 1.5rem 0 2rem;
@@ -15686,6 +15751,10 @@ figure.woocommerce-product-gallery__wrapper {
 .cff-membership-person-fields p {
   margin-bottom: 1rem;
   color: #4c5675;
+}
+
+.cff-event-ticket-fields__toggle {
+  margin: 0.85rem 0 0.75rem;
 }
 
 .cff-event-ticket,
@@ -16819,6 +16888,487 @@ figure.woocommerce-product-gallery__wrapper {
 }
 .single-business-card--accent-red {
   border-left-color: #dc3545;
+}
+
+.cff-membership-application {
+  padding: 5rem 0;
+  background-color: #f3f3f3;
+}
+.cff-membership-application__requirement {
+  position: relative;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  max-width: 900px;
+  margin: 0 auto 5rem;
+  padding: 2rem 2.25rem;
+  overflow: hidden;
+  background-color: #ffffff;
+  border: 1px solid rgba(29, 49, 138, 0.1);
+  border-radius: 1rem;
+  box-shadow: 0 0.65rem 1.8rem rgba(0, 0, 0, 0.05);
+}
+.cff-membership-application__requirement::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 0.4rem;
+  background-color: #198754;
+}
+.cff-membership-application__requirement h3, .cff-membership-application__requirement .h3 {
+  margin: 0 0 0.5rem;
+  color: #1d318a;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+.cff-membership-application__requirement p {
+  margin: 0 0 0.5rem;
+  color: #4b5563;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+.cff-membership-application__requirement p:last-child {
+  margin-bottom: 0;
+}
+.cff-membership-application__requirement-icon {
+  display: flex;
+  flex: 0 0 4.5rem;
+  align-items: center;
+  justify-content: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  background-color: rgba(25, 135, 84, 0.1);
+  color: #198754;
+  font-size: 1.75rem;
+}
+.cff-membership-application__process {
+  margin-top: 2rem;
+}
+.cff-membership-application__process .about-section-heading {
+  margin-bottom: 2.5rem;
+}
+
+.cff-process-card {
+  height: 100%;
+  min-height: 230px;
+  padding: 1.75rem;
+  background-color: #ffffff;
+  border: 1px solid rgba(29, 49, 138, 0.1);
+  border-radius: 1rem;
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.045);
+  text-align: left;
+}
+.cff-process-card__number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-bottom: 1.25rem;
+  border-radius: 50%;
+  background-color: #1d318a;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+.cff-process-card h3, .cff-process-card .h3 {
+  margin: 0 0 0.6rem;
+  color: #1d318a;
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+.cff-process-card p {
+  margin: 0;
+  color: #4b5563;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.cff-membership-conditions {
+  padding: 4.5rem 0;
+  background-color: #ffffff;
+}
+.cff-membership-conditions__inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2.5rem;
+  border: 1px solid rgba(29, 49, 138, 0.1);
+  border-radius: 1rem;
+  background-color: rgba(29, 49, 138, 0.035);
+}
+.cff-membership-conditions__heading {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1.75rem;
+}
+.cff-membership-conditions__heading > i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 3.25rem;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  background-color: rgba(29, 49, 138, 0.1);
+  color: #1d318a;
+  font-size: 1.25rem;
+}
+.cff-membership-conditions__heading h2, .cff-membership-conditions__heading .h2 {
+  margin: 0 0 0.3rem;
+  color: #1d318a;
+  font-size: 1.75rem;
+  font-weight: 800;
+}
+.cff-membership-conditions__heading p {
+  margin: 0;
+  color: #a3a3a3;
+}
+.cff-membership-conditions__list {
+  display: grid;
+  gap: 0.9rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cff-membership-conditions__list li {
+  position: relative;
+  padding-left: 2rem;
+  color: #374151;
+  line-height: 1.5;
+}
+.cff-membership-conditions__list li::before {
+  content: "\f00c";
+  position: absolute;
+  top: 0.05rem;
+  left: 0;
+  font-family: "Font Awesome 7 Pro";
+  font-weight: 900;
+  color: #198754;
+}
+
+.cff-application-form {
+  position: relative;
+  max-width: 1050px;
+  margin: 4.5rem auto;
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+  overflow: hidden;
+  background-color: #ffffff;
+  border: 1px solid rgba(29, 49, 138, 0.1);
+  border-radius: 1.25rem;
+  box-shadow: 0 1rem 2.75rem rgba(0, 0, 0, 0.07);
+}
+.cff-application-form::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 0.35rem;
+  background: linear-gradient(to right, #198754 0%, #198754 25%, #ffffff 25%, #ffffff 50%, #dc3545 50%, #dc3545 75%, #1d318a 75%, #1d318a 100%);
+}
+.cff-application-form__logos {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 2.75rem;
+}
+.cff-application-form__logo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 190px;
+  min-height: 95px;
+  padding: 1rem;
+  border: 1px dashed rgba(29, 49, 138, 0.2);
+  border-radius: 0.75rem;
+  background-color: #f3f3f3;
+  color: #a3a3a3;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+}
+.cff-application-form__logo-divider {
+  width: 1px;
+  height: 70px;
+  background-color: rgba(29, 49, 138, 0.15);
+}
+.cff-application-form__header {
+  max-width: 720px;
+  margin: 0 auto 3rem;
+  text-align: center;
+}
+.cff-application-form__header h2, .cff-application-form__header .h2 {
+  margin-bottom: 0.75rem;
+  color: #1d318a;
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  line-height: 1.05;
+  font-weight: 800;
+}
+.cff-application-form__header p {
+  max-width: 600px;
+  margin: 0 auto;
+  color: #4b5563;
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+.cff-application-form__eyebrow {
+  margin-bottom: 0.4rem !important;
+  color: #a3a3a3;
+  font-size: 1.05rem;
+  font-style: italic;
+}
+.cff-application-form__section {
+  margin-top: 1.5rem;
+  padding: 2rem;
+  background-color: #fafbfe;
+  border: 1px solid rgba(29, 49, 138, 0.09);
+  border-radius: 0.9rem;
+}
+.cff-application-form__section > h3, .cff-application-form__section > .h3 {
+  margin: 0 0 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(29, 49, 138, 0.1);
+  color: #1d318a;
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+.cff-application-form__section label {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: #26375e;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.cff-application-form__section input[type=text],
+.cff-application-form__section input[type=email],
+.cff-application-form__section input[type=tel],
+.cff-application-form__section select,
+.cff-application-form__section textarea {
+  display: block;
+  width: 100%;
+  min-height: 52px;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid #d7dce7;
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+  color: #222;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.cff-application-form__section input[type=text]:hover,
+.cff-application-form__section input[type=email]:hover,
+.cff-application-form__section input[type=tel]:hover,
+.cff-application-form__section select:hover,
+.cff-application-form__section textarea:hover {
+  border-color: rgba(29, 49, 138, 0.35);
+}
+.cff-application-form__section input[type=text]:focus,
+.cff-application-form__section input[type=email]:focus,
+.cff-application-form__section input[type=tel]:focus,
+.cff-application-form__section select:focus,
+.cff-application-form__section textarea:focus {
+  outline: none;
+  border-color: #1d318a;
+  box-shadow: 0 0 0 0.2rem rgba(29, 49, 138, 0.1);
+}
+.cff-application-form__section select {
+  cursor: pointer;
+}
+.cff-application-form__section--proposer {
+  position: relative;
+  background-color: rgba(25, 135, 84, 0.045);
+  border-color: rgba(25, 135, 84, 0.2);
+  border-left: 0.4rem solid #198754;
+}
+.cff-application-form__section--declaration {
+  background-color: rgba(29, 49, 138, 0.035);
+  border-left: 0.4rem solid #1d318a;
+}
+.cff-application-form__section--declaration > h3, .cff-application-form__section--declaration > .h3 {
+  border-bottom-color: rgba(29, 49, 138, 0.15);
+}
+.cff-application-form__section--declaration p {
+  color: #4b5563;
+  line-height: 1.6;
+}
+.cff-application-form__section-heading {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1.75rem;
+}
+.cff-application-form__section-heading > i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 3rem;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background-color: rgba(25, 135, 84, 0.1);
+  color: #198754;
+  font-size: 1.2rem;
+}
+.cff-application-form__section-heading h3, .cff-application-form__section-heading .h3 {
+  margin: 0 0 0.3rem;
+  color: #1d318a;
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+.cff-application-form__section-heading p {
+  max-width: 680px;
+  margin: 0;
+  color: #a3a3a3;
+  line-height: 1.5;
+}
+.cff-application-form .wpcf7-list-item {
+  margin: 0 1.5rem 0.6rem 0;
+}
+.cff-application-form .wpcf7-list-item label {
+  display: inline-flex;
+  gap: 0.6rem;
+  align-items: center;
+  color: #374151;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.cff-application-form .wpcf7-list-item input[type=radio],
+.cff-application-form .wpcf7-list-item input[type=checkbox] {
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: #1d318a;
+}
+.cff-application-form .wpcf7-acceptance {
+  display: block;
+  margin-top: 1.5rem;
+  padding: 1rem 1.15rem;
+  border-radius: 0.65rem;
+  background-color: #ffffff;
+  border: 1px solid rgba(29, 49, 138, 0.1);
+}
+.cff-application-form .wpcf7-acceptance label {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  margin: 0;
+  color: #374151;
+  font-weight: 500;
+  line-height: 1.5;
+  cursor: pointer;
+}
+.cff-application-form .wpcf7-acceptance input {
+  flex: 0 0 auto;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-top: 0.15rem;
+  accent-color: #1d318a;
+}
+.cff-application-form .wpcf7-acceptance a {
+  color: #1d318a;
+  font-weight: 700;
+}
+.cff-application-form__submit {
+  margin-top: 2.5rem;
+  text-align: center;
+}
+.cff-application-form__submit .wpcf7-submit {
+  width: auto;
+  min-width: 340px;
+  min-height: 56px;
+  padding: 0.9rem 1.75rem;
+  border: 0 !important;
+  border-radius: 0.55rem;
+  background-color: #1d318a !important;
+  color: #ffffff !important;
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.cff-application-form__submit .wpcf7-submit:hover, .cff-application-form__submit .wpcf7-submit:focus, .cff-application-form__submit .wpcf7-submit:active {
+  background-color: #182871 !important;
+  color: #ffffff !important;
+}
+.cff-application-form__note {
+  max-width: 650px;
+  margin: 1.25rem auto 0;
+  color: #a3a3a3;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+.cff-application-form .wpcf7-not-valid-tip {
+  margin-top: 0.4rem;
+  color: #dc3545;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.cff-application-form .wpcf7-response-output {
+  margin: 1.5rem 0 0 !important;
+  padding: 1rem 1.25rem !important;
+  border-radius: 0.6rem;
+}
+
+@media (max-width: 767.98px) {
+  .cff-membership-application {
+    padding: 3.5rem 0;
+  }
+  .cff-membership-application__requirement {
+    align-items: flex-start;
+    flex-direction: column;
+    margin-bottom: 3rem;
+    padding: 1.5rem;
+  }
+  .cff-process-card {
+    min-height: 0;
+  }
+  .cff-membership-conditions {
+    padding: 3rem 0;
+  }
+  .cff-membership-conditions__inner {
+    padding: 1.5rem;
+  }
+  .cff-application-form {
+    margin: 3rem auto;
+    padding: 1.5rem;
+    border-radius: 0.9rem;
+  }
+  .cff-application-form__logos {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .cff-application-form__logo-divider {
+    width: 80px;
+    height: 1px;
+  }
+  .cff-application-form__section {
+    padding: 1.25rem;
+  }
+  .cff-application-form__submit .wpcf7-submit {
+    width: 100%;
+    min-width: 0;
+  }
+}
+.cff-form-field {
+  display: flex;
+  flex-direction: column;
+}
+.cff-form-field > label {
+  margin-bottom: 0.5rem;
+}
+.cff-form-field .wpcf7-form-control-wrap {
+  display: block;
+  margin-top: auto;
+}
+.cff-form-field input,
+.cff-form-field select,
+.cff-form-field textarea {
+  width: 100%;
 }
 
 .has-blue-color,
