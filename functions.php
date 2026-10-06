@@ -1043,7 +1043,7 @@ add_filter( 'woocommerce_payment_complete_order_status', function( $status, $ord
 
 // Check whether every item in the order is in the Events category
 function cff_is_event_order( $order ) {
-    $event_category = 'events'; // ← category slug
+    $event_category = 'event'; // ← category slug
     if ( ! $order instanceof WC_Order ) return false;
     $items = $order->get_items();
     if ( empty( $items ) ) return false;
