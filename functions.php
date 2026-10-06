@@ -1014,3 +1014,96 @@ add_action('wp_body_open', function () {
 	<!-- End Google Tag Manager (noscript) -->
     <?php
 }, 1);
+
+//move event products straight to complete.
+
+add_filter( 'woocommerce_payment_complete_order_status', function( $status, $order_id, $order = null ) {
+
+    $event_category = 'event'; // ← category slug (see note below)
+
+    if ( ! $order ) {
+        $order = wc_get_order( $order_id );
+    }
+    if ( ! $order ) return $status;
+
+    // Only auto-complete if every item in the order is in the Events category
+    foreach ( $order->get_items() as $item ) {
+        if ( ! has_term( $event_category, 'product_cat', $item->get_product_id() ) ) {
+            return $status;
+        }
+    }
+
+    return 'completed';
+
+}, 10, 3 );
+
+/**
+ * Circle for Friends – event ticket version of the "Completed order" email
+ */
+
+// Check whether every item in the order is in the Events category
+function cff_is_event_order( $order ) {
+    $event_category = 'events'; // ← category slug
+    if ( ! $order instanceof WC_Order ) return false;
+    $items = $order->get_items();
+    if ( empty( $items ) ) return false;
+    foreach ( $items as $item ) {
+        if ( ! has_term( $event_category, 'product_cat', $item->get_product_id() ) ) return false;
+    }
+    return true;
+}
+
+// 1. Subject line
+add_filter( 'woocommerce_email_subject_customer_completed_order', function( $subject, $order ) {
+    if ( ! cff_is_event_order( $order ) ) return $subject;
+    $items = $order->get_items();
+    if ( count( $items ) === 1 ) {
+        $item = reset( $items );
+        return 'Booking confirmed: ' . $item->get_name();
+    }
+    return 'Your Circle for Friends event booking is confirmed';
+}, 10, 2 );
+
+// 2. Heading
+add_filter( 'woocommerce_email_heading_customer_completed_order', function( $heading, $order ) {
+    return cff_is_event_order( $order ) ? 'You’re booked in!' : $heading;
+}, 10, 2 );
+
+// 3. Intro text (only while an event "Completed order" email is being built)
+add_action( 'woocommerce_email_header', function( $heading, $email = null ) {
+    $GLOBALS['cff_event_email'] = $email && 'customer_completed_order' === $email->id && cff_is_event_order( $email->object );
+}, 1, 2 );
+
+add_action( 'woocommerce_email_footer', function() {
+    $GLOBALS['cff_event_email'] = false;
+}, 99 );
+
+add_filter( 'gettext', function( $translation, $text, $domain ) {
+    if ( 'woocommerce' !== $domain || empty( $GLOBALS['cff_event_email'] ) ) return $translation;
+    switch ( $text ) {
+        case 'We have finished processing your order.':
+            return 'Thank you for your booking – your place is confirmed. This email is your proof of purchase. No tickets will be sent out, so please keep it for your records.';
+        case 'Here’s a reminder of what you’ve ordered:':
+        case "Here's a reminder of what you've ordered:":
+            return 'Here are your booking details:';
+    }
+    return $translation;
+}, 10, 3 );
+
+// 4. Attendee & dietary requirements box (below the order summary)
+add_action( 'woocommerce_email_after_order_table', function( $order, $sent_to_admin, $plain_text, $email ) {
+    if ( $sent_to_admin || 'customer_completed_order' !== $email->id || ! cff_is_event_order( $order ) ) return;
+
+    if ( $plain_text ) {
+        echo "\nATTENDEE NAMES & DIETARY REQUIREMENTS\n"
+           . "If you didn't provide the names of your guests or any dietary requirements when booking, please email info@circleforfriends.com.au before the event's RSVP date. You'll find the RSVP date on your invitation or on the event page on our website.\n\n";
+        return;
+    }
+
+    echo '<div style="margin:24px 0; padding:16px 20px; background:#f5f7fb; border-left:4px solid #22388c;">'
+       . '<p style="margin:0 0 8px;"><strong>Attendee names &amp; dietary requirements</strong></p>'
+       . '<p style="margin:0;">If you didn’t provide the names of your guests or any dietary requirements when booking, please email '
+       . '<a href="mailto:info@circleforfriends.com.au" style="color:#22388c;">info@circleforfriends.com.au</a> '
+       . 'before the event’s RSVP date. You’ll find the RSVP date on your invitation or on the event page on our website.</p>'
+       . '</div>';
+}, 10, 4 );
